@@ -1,5 +1,3 @@
-extends RefCounted
-
 class_name SampleTools
 
 var sample: AudioStreamWAV

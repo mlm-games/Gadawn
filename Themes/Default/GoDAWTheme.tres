@@ -1,9 +1,9 @@
 [gd_resource type="Theme" load_steps=30 format=3 uid="uid://cee0yehrjy3kp"]
 
-[ext_resource type="FontFile" path="res://Themes/Default/Font/Mononoki/Font.tres" id="1"]
+[ext_resource type="FontFile" uid="uid://cgoku3dq1sy7x" path="res://Themes/Default/Font/Mononoki/Font.tres" id="1"]
 [ext_resource type="Texture2D" uid="uid://n1m3y37ebw55" path="res://Themes/Default/ButtonIcons/close.png" id="2"]
 [ext_resource type="Texture2D" uid="uid://dvmeqdt1t6ory" path="res://Themes/Default/ButtonIcons/grabber.png" id="3"]
-[ext_resource type="FontFile" path="res://Themes/Default/Font/DejaVuSans/Font.tres" id="4"]
+[ext_resource type="FontFile" uid="uid://k4hgdr0w0c0u" path="res://Themes/Default/Font/DejaVuSans/Font.tres" id="4"]
 
 [sub_resource type="StyleBoxFlat" id="1"]
 content_margin_left = 6.0
