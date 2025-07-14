@@ -1,11 +1,13 @@
-[gd_scene load_steps=8 format=3 uid="uid://dg4ppy8ynqeux"]
+[gd_scene load_steps=10 format=3 uid="uid://dg4ppy8ynqeux"]
 
-[ext_resource type="PackedScene" uid="uid://b4hc2xsvkl52r" path="res://util/sequencer/sequencer.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://bve7wimpparyi" path="res://util/sequencer/sequencer.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://d0640825wwiqj" path="res://editor/scenes/song_editor/song_editor.tscn" id="3"]
 [ext_resource type="Script" uid="uid://6pxioyca0vtd" path="res://main.gd" id="4"]
+[ext_resource type="PackedScene" uid="uid://b4hc2xsvkl52r" path="res://editor/scenes/control_panel/control_panel.tscn" id="4_5vw27"]
 [ext_resource type="PackedScene" uid="uid://cluyvkosdd3n8" path="res://editor/scenes/instruments/instruments_panel.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://co3426kj3k403" path="res://editor/scenes/top_menu/top_menu.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://cd0y087oaaxj8" path="res://editor/scenes/status_bar.tscn" id="7_wkp8b"]
+[ext_resource type="Script" uid="uid://dg653mebptva4" path="res://editor/scenes/song_script_editor/song_validator.gd" id="8_5vw27"]
 [ext_resource type="PackedScene" uid="uid://buoe276tnprxb" path="res://editor/scenes/dialog_manager.tscn" id="8_trn2v"]
 
 [node name="Main" type="MarginContainer"]
@@ -23,6 +25,7 @@ layout_mode = 2
 theme_override_constants/separation = 10
 
 [node name="TopMenu" parent="VBoxContainer" instance=ExtResource("6")]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 
@@ -45,7 +48,9 @@ size_flags_horizontal = 3
 size_flags_stretch_ratio = 0.75
 theme_override_constants/separation = 10
 
-[node name="ControlPanel" parent="VBoxContainer/Application/Main" instance=ExtResource("1")]
+[node name="ControlPanel" parent="VBoxContainer/Application/Main" instance=ExtResource("4_5vw27")]
+unique_name_in_owner = true
+layout_mode = 2
 
 [node name="SongEditor" parent="VBoxContainer/Application/Main" instance=ExtResource("3")]
 unique_name_in_owner = true
@@ -53,19 +58,17 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="StatusBar" parent="VBoxContainer" instance=ExtResource("7_wkp8b")]
+unique_name_in_owner = true
 layout_mode = 2
 
 [node name="DialogManager" parent="." instance=ExtResource("8_trn2v")]
 unique_name_in_owner = true
 layout_mode = 2
 
-[connection signal="project_changed" from="." to="VBoxContainer/TopMenu" method="project_changed"]
-[connection signal="project_changed" from="." to="VBoxContainer/Application/Main/SongEditor" method="project_changed"]
-[connection signal="export_pressed" from="VBoxContainer/TopMenu" to="." method="_on_top_menu_export_pressed"]
-[connection signal="open_pressed" from="VBoxContainer/TopMenu" to="." method="_on_top_menu_open_pressed"]
-[connection signal="quit_pressed" from="VBoxContainer/TopMenu" to="VBoxContainer/TopMenu" method="_quit"]
-[connection signal="save_as_pressed" from="VBoxContainer/TopMenu" to="." method="_on_top_menu_save_as_pressed"]
-[connection signal="save_pressed" from="VBoxContainer/TopMenu" to="." method="_on_top_menu_save_pressed"]
-[connection signal="instrument_chosen" from="VBoxContainer/Application/InstrumentsPanel" to="VBoxContainer/Application/Main/SongEditor" method="add_track"]
-[connection signal="playback_finished" from="VBoxContainer/Application/Main/SongEditor" to="VBoxContainer/Application/Main/ControlPanel" method="_on_finished"]
-[connection signal="song_script_error" from="VBoxContainer/Application/Main/SongEditor" to="VBoxContainer/Application/Main/ControlPanel" method="_on_finished"]
+[node name="SongValidator" type="Node" parent="."]
+unique_name_in_owner = true
+script = ExtResource("8_5vw27")
+metadata/_custom_type_script = "uid://dg653mebptva4"
+
+[node name="Sequencer" parent="." instance=ExtResource("1")]
+unique_name_in_owner = true

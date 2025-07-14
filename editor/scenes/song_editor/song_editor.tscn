@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://d0640825wwiqj"]
 
-[ext_resource type="PackedScene" uid="uid://cg6lcq4f2mrgq" path="res://Editor/scenes/SongScriptEditor/SongScriptEditor.tscn" id="1"]
-[ext_resource type="Script" uid="uid://ccqewlrwg8frv" path="res://Editor/scenes/SongEditor/SongEditor.gd" id="2"]
-[ext_resource type="PackedScene" uid="uid://b4hc2xsvkl52r" path="res://util/sequencer/Sequencer.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://cg6lcq4f2mrgq" path="res://editor/scenes/song_script_editor/song_script_editor.tscn" id="1"]
+[ext_resource type="Script" uid="uid://ccqewlrwg8frv" path="res://editor/scenes/song_editor/song_editor.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://bve7wimpparyi" path="res://util/sequencer/sequencer.tscn" id="3"]
 
 [node name="SongEditor" type="VBoxContainer"]
 anchors_preset = 15

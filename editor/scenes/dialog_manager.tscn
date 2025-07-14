@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=3 uid="uid://buoe276tnprxb"]
 
-[ext_resource type="Script" uid="uid://bryrm2ttfmhmv" path="res://Editor/scenes/Dialogues/DialogManager.gd" id="1_vjofo"]
-[ext_resource type="PackedScene" uid="uid://pkt7eyynei58" path="res://Editor/scenes/Dialogues/TrackEditor/TrackEditor.tscn" id="2_u4wo2"]
-[ext_resource type="PackedScene" uid="uid://deiwl44g146pg" path="res://Editor/scenes/Dialogues/NewSong/NewSong.tscn" id="3_tf515"]
+[ext_resource type="Script" uid="uid://bryrm2ttfmhmv" path="res://editor/scenes/dialogues/dialog_manager.gd" id="1_vjofo"]
+[ext_resource type="PackedScene" uid="uid://pkt7eyynei58" path="res://editor/scenes/dialogues/track_editor/track_editor.tscn" id="2_u4wo2"]
+[ext_resource type="PackedScene" uid="uid://deiwl44g146pg" path="res://editor/scenes/dialogues/new_song/new_song.tscn" id="3_tf515"]
 
 [node name="DialogManager" type="Control"]
 layout_mode = 3
@@ -69,6 +69,7 @@ filters = PackedStringArray("*.wav ; Wav Files")
 title = "Track Editor"
 position = Vector2i(0, 36)
 size = Vector2i(876, 480)
+visible = false
 
 [node name="NewSong" parent="." instance=ExtResource("3_tf515")]
 size = Vector2i(202, 112)

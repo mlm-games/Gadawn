@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://deiwl44g146pg"]
 
-[ext_resource type="Script" uid="uid://diywbyc0w2bp6" path="res://Editor/scenes/Dialogues/NewSong/NewSong.gd" id="1"]
+[ext_resource type="Script" uid="uid://diywbyc0w2bp6" path="res://editor/scenes/dialogues/new_song/new_song.gd" id="1"]
 
 [node name="NewSong" type="ConfirmationDialog"]
 script = ExtResource("1")

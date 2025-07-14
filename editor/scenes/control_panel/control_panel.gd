@@ -1,36 +1,28 @@
-extends Control
+extends PanelContainer
 
-signal play()
-signal pause()
-signal stop()
+signal play_pressed()
+signal pause_pressed()
+signal stop_pressed()
+signal bpm_changed(bpm: float)
 
-@onready var buttons = {
-	"Play": %PlayButton,
-	"Pause": %PauseButton,
-	"Stop": %StopButton,
-	#"Add": %AddButton,
-}
+@onready var play_button = %PlayButton
+@onready var pause_button = %PauseButton
+@onready var stop_button = %StopButton
+@onready var bpm_spinbox = %BPMSpinBox
 
-func _on_PlayButton_pressed():
-	play.emit()
-	buttons.Play.disabled = true
-	buttons.Pause.disabled = false
-	buttons.Stop.disabled = false
+func _ready():
+	play_button.disabled = false
+	pause_button.disabled = true
+	stop_button.disabled = true
+	
+	bpm_spinbox.value_changed.connect(func(val): bpm_changed.emit(val))
 
-func _on_PauseButton_pressed():
-	pause.emit()
-	buttons.Play.disabled = false
-	buttons.Pause.disabled = true
-	buttons.Stop.disabled = false
+func on_playback_started():
+	play_button.disabled = true
+	pause_button.disabled = false
+	stop_button.disabled = false
 
-func _on_StopButton_pressed():
-	stop.emit()
-	buttons.Play.disabled = false
-	buttons.Pause.disabled = true
-	buttons.Stop.disabled = true
-
-func _on_finished(_n = ""):
-	await get_tree().process_frame
-	buttons.Play.disabled = false
-	buttons.Pause.disabled = true
-	buttons.Stop.disabled = true
+func on_playback_stopped():
+	play_button.disabled = false
+	pause_button.disabled = true
+	stop_button.disabled = true

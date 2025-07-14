@@ -5,7 +5,7 @@ const OCTAVE_FACTOR = pow(2, 1.0/12)
 var currently_playing := {}
 
 func _init():
-	super("TripleOsc", 22050)
+	super("triple_osc", 22050)
 
 func waveform(_t: float):
 	# Add amplitudes

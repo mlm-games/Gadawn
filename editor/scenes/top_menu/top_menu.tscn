@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://co3426kj3k403"]
 
-[ext_resource type="Script" uid="uid://bq2qk6sik7xtx" path="res://Editor/scenes/TopMenu/TopMenu.gd" id="1"]
+[ext_resource type="Script" uid="uid://bq2qk6sik7xtx" path="res://editor/scenes/top_menu/top_menu.gd" id="1"]
 
 [node name="TopMenu" type="HBoxContainer"]
 anchors_preset = 15

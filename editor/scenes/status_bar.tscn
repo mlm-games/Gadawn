@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cd0y087oaaxj8"]
 
-[ext_resource type="Script" uid="uid://bukaxb434ull2" path="res://Editor/scenes/ControlPanel/status_bar.gd" id="1_gl4rx"]
+[ext_resource type="Script" uid="uid://bukaxb434ull2" path="res://editor/scenes/control_panel/status_bar.gd" id="1_gl4rx"]
 
 [node name="StatusBar" type="PanelContainer"]
 custom_minimum_size = Vector2(0, 25)

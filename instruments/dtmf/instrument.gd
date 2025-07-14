@@ -28,7 +28,7 @@ const KEYS := {
 var current_key := ""
 
 func _init():
-	super("DTMF")
+	super("dmtf")
 
 func waveform(_t: float) -> float:
 	if current_key != "":

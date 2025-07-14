@@ -20,45 +20,38 @@ signal quit_pressed()
 			"Quit": quit_pressed,
 		}
 	},
-	"Edit": {
-		"node": $EditMenu,
-		"elements": {}
-	},
-	"View": {
-		"node": $ViewMenu,
-		"elements": {}
-	},
-	"Help": {
-		"node": $HelpMenu,
-		"elements": {}
-	}
+	"Edit": { "node": $EditMenu, "elements": {} },
+	"View": { "node": $ViewMenu, "elements": {} },
+	"Help": { "node": $HelpMenu, "elements": {} }
 }
 
 func _ready():
-	for menu in menus:
-		var m = menus[menu]
-		var node = m.node
-		init_menu(node, m.elements)
-		node.get_popup().id_pressed.connect(_on_item_pressed.bind(menu))
+	for menu_name in menus:
+		var menu_data = menus[menu_name]
+		var menu_node = menu_data.node
+		init_menu(menu_node, menu_data.elements)
+		menu_node.get_popup().id_pressed.connect(_on_item_pressed.bind(menu_name))
+	
+	CurrentProject.project_changed.connect(on_project_changed)
 
-func project_changed(project):
+func on_project_changed(project: Project):
 	$ProjectName.text = project.project_name
 
 func _on_item_pressed(id: int, menu: String):
 	var menu_dict = menus[menu]
 	var node = menu_dict.node
 	var item_name = node.get_popup().get_item_text(id)
-	var signal_name : Signal = menu_dict["elements"][item_name]
+	var signal_to_emit: Signal = menu_dict["elements"][item_name]
 	
-	if signal_name.get_name() != "":
-		signal_name.emit()
+	if signal_to_emit.get_name() != "":
+		signal_to_emit.emit()
 
 func init_menu(menu, items):
 	for e in items:
 		if e == "Separator":
-			menu.get_popup().add_separator("")
-			continue
-		menu.get_popup().add_item(e)
+			menu.get_popup().add_separator()
+		else:
+			menu.get_popup().add_item(e)
 
 func _quit():
 	get_tree().quit()

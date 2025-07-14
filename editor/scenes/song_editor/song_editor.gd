@@ -1,186 +1,70 @@
-extends VBoxContainer
+class_name SongEditor extends VBoxContainer
 
-# Signals
-signal playback_finished()
-signal start_loading()
-signal stop_loading()
-signal done_error_handling()
-signal done_error_check(error)
-signal song_script_error(error)
-signal track_pressed(name)
-signal sequence_complete()
+signal validation_requested_for_export
 
-@onready var SCRIPT_LOCATION = OS.get_user_data_dir() + "/song.gd"
-@onready var sequencer: Sequencer = %Sequencer
 @onready var song_script_editor: CodeEdit = %SongScriptEditor
-
-var ERROR_REGEX = RegEx.new()
-const SONG_PATH = "user://song.gd"
+@onready var tracks_scroll_container: ScrollContainer = %TracksScroll
+@onready var track_names_container: VBoxContainer = %Names
+@onready var instrument_container: Node = %InstrumentContainer
+@onready var sequencer: Sequencer = %Sequencer
+@onready var track_name_scene = preload("./track_name.tscn")
 
 const BASE_SONG_SCRIPT = """extends SongScript
 
 func song():
-	track("%s", [
-		# Place your notes here
+	track("Square", [
+		# Place your notes here (start_delay, duration, {data})
 		note(0.0, 0.5, {"key": 60}),  # Middle C
 		note(0.5, 0.5, {"key": 62}),  # D
 		note(1.0, 0.5, {"key": 64}),  # E
 	])
 """
 
-var gui: bool = true
-var track_name = preload("./track_name.tscn")
-var error_text = ""
-var in_file = ""
+func _on_play_pressed():
+	Main.instance.status_bar.set_status("Validating...")
+	Main.instance.song_validator.validate_script(song_script_editor.text)
 
-func _ready():
-	ERROR_REGEX.compile("SCRIPT ERROR: (.*?)\\n(?:.*?):([0-9]+)")
-	done_error_check.connect(_after_error_check)
-	done_error_handling.connect(_on_sequence_complete)
-
-func add_track(instrument: Button):
-	if gui:
-		# GUI mode - add visual track
-		var name_button: Button = track_name.instantiate()
-		name_button.set_instrument(instrument.icon, instrument.text)
-		%Names.add_child(name_button)
-		name_button.pressed.connect(func(): track_pressed.emit(instrument.text))
-	else:
-		# SongScript mode - insert code template
-		var _cursor_line = %SongScriptEditor.get_caret_line()
-		var current_text = %SongScriptEditor.text
-		
-		# Find the song() function
-		var song_func_line = -1
-		var lines = current_text.split("\n")
-		for i in range(lines.size()):
-			if "func song():" in lines[i]:
-				song_func_line = i
-				break
-		
-		if song_func_line != -1:
-			# Insert a new track after the last track or after func song():
-			var insert_line = song_func_line + 1
-			var indent = "\t"
-			
-			# Find last track to insert after it
-			for i in range(song_func_line + 1, lines.size()):
-				if indent + "track(" in lines[i]:
-					insert_line = i + 1
-					# Find the closing bracket
-					var bracket_count = 1
-					for j in range(i + 1, lines.size()):
-						if "[" in lines[j]:
-							bracket_count += 1
-						if "]" in lines[j]:
-							bracket_count -= 1
-							if bracket_count == 0:
-								insert_line = j + 1
-								break
-			
-			# Create new track code
-			var new_track = "\n" + indent + 'track("%s", [\n' % instrument.text
-			new_track += indent + "\t# Add your notes here\n"
-			new_track += indent + '\tnote(0.0, 0.5, {"key": 60}),  # Middle C\n'
-			new_track += indent + "])"
-			
-			# Insert at the right position
-			%SongScriptEditor.set_caret_line(insert_line)
-			%SongScriptEditor.insert_text_at_caret(new_track)
+func _on_validation_succeeded(song_sequence: SongSequence):
+	Main.instance.status_bar.set_status("Ready", "success")
 	
-	# Add instrument to sequencer (needed for both modes)
-	var inst := GoDawn.get_instrument(instrument.text)
-	if inst:
-		$Sequencer.INSTRUMENTS[instrument.text] = inst
-		%InstrumentContainer.add_child(inst)
+	_reconcile_instruments(song_sequence)
+	sequencer.sequence(song_sequence)
+	sequencer.play()
 
-
-func check_error():
-	# Save script to file
-	var file = FileAccess.open(SONG_PATH, FileAccess.WRITE)
-	if file:
-		file.store_string(%SongScriptEditor.text)
-		file.close()
-	else:
-		done_error_check.emit("Failed to save script file")
-		return
+func _reconcile_instruments(song_sequence: SongSequence):
+	for child in instrument_container.get_children():
+		child.queue_free()
+	sequencer.INSTRUMENTS.clear()
 	
-	# Try to load and validate the script
-	var script = load(SONG_PATH)
-	if not script:
-		done_error_check.emit("Failed to load script")
-		return
+	for track in song_sequence.tracks:
+		var inst = GoDawn.get_instrument(track.instrument)
+		if inst:
+			sequencer.INSTRUMENTS[track.instrument] = inst
+			instrument_container.add_child(inst)
+
+func on_project_changed(project: Project):
+	var is_gui_mode = project.project_type == Project.PROJECT_TYPE.GUI
+	song_script_editor.visible = not is_gui_mode
+	tracks_scroll_container.visible = is_gui_mode
 	
-	var instance = script.new()
-	if not instance.has_method("song"):
-		done_error_check.emit("Script has no song() method")
-		return
-	
-	done_error_check.emit("")
-
-func _after_error_check(error):
-	stop_loading.emit()
-	error_text = error
-	if error:
-		song_script_error.emit(error_text)
-		return false
-
-	error_text = ""
-	var song: SongScript = load(SONG_PATH).new()
-	song.sequence.tracks.clear()
-	song.song()
-	
-	# Update instruments if needed
-	if song.sequence.tracks.size() != %InstrumentContainer.get_child_count():
-		%Sequencer.INSTRUMENTS.clear()
-		for instrument in %InstrumentContainer.get_children():
-			instrument.queue_free()
-		for track in song.sequence.tracks:
-			var inst = GoDawn.get_instrument(track.instrument)
-			if inst:
-				%Sequencer.INSTRUMENTS[track.instrument] = inst
-				%InstrumentContainer.add_child(inst)
-	
-	%Sequencer.sequence(song.sequence)
-	done_error_handling.emit()
-
-func _on_sequence_complete():
-	sequence_complete.emit()
-
-func sequence():
-	if !gui:
-		start_loading.emit()
-		if in_file != %SongScriptEditor.text:
-			in_file = %SongScriptEditor.text
-			check_error()
-			await sequence_complete
-		else:
-			done_error_handling.emit()
-			await sequence_complete
-
-func _on_play():
-	await sequence()
-	%Sequencer.play()
-
-func _on_pause():
-	%Sequencer.pause()
-
-func _on_stop():
-	%Sequencer.stop()
-
-func _on_Sequencer_playback_finished():
-	playback_finished.emit()
-
-func project_changed(project: Project):
-	gui = true if project.project_type == Project.PROJECT_TYPE.GUI else false
-	%SongScriptEditor.visible = !gui
-	%TracksScroll.visible = gui
-	
-	# Clear existing tracks
-	for n in %Names.get_children():
+	for n in track_names_container.get_children():
 		n.queue_free()
 	
-	if project.song_script:
-		%SongScriptEditor.text = project.song_script
+	if project.song_script and not project.song_script.is_empty():
+		song_script_editor.text = project.song_script
 	else:
-		%SongScriptEditor.text = BASE_SONG_SCRIPT % "Square"
+		song_script_editor.text = BASE_SONG_SCRIPT
+
+func add_track(instrument: Button):
+	if CurrentProject.project.project_type == Project.PROJECT_TYPE.SONGSCRIPT:
+		var indent = "\t"
+		var new_track = '\n%strack("%s", [\n' % [indent, instrument.text]
+		new_track += indent + "\t# Add notes here\n"
+		new_track += indent + '])'
+		song_script_editor.insert_text_at_caret(new_track)
+
+func get_script_text() -> String:
+	return song_script_editor.text
+
+func request_validation_for_export():
+	Main.instance.song_validator.validate_script(song_script_editor.text)

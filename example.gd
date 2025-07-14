@@ -2,7 +2,7 @@ extends SongScript
 
 func song():
 	var d = 0.275
-	track("TripleOsc", [
+	track("triple_osc", [
 		pattern([
 			pattern([
 				note(d, d, { "key": 62 }),

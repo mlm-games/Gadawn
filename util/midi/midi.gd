@@ -283,7 +283,7 @@ func play(start_time = 0):
 	var song = SongSequence.new()
 	for track in tracks:
 		var new_track = Track.new()
-		new_track.instrument = "Square"
+		new_track.instrument = "square"
 		for idx in track.notes.size():
 			var note = track.notes[idx] as MidiNote
 			var new_note = Note.new()

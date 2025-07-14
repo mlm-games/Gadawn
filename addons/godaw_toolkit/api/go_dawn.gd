@@ -4,9 +4,9 @@ signal loading_progress_max_value_changed(max_value)
 signal loading_progress_value_changed()
 signal loading_instrument_changed(instrument_named)
 
-var instruments : Dictionary[StringName, PackedScene]= {}
+var instruments : Dictionary[StringName, PackedScene] = {}
 
-func register_instrument(name: String, instrument: PackedScene):
+func register_instrument(name: StringName, instrument: PackedScene):
 	instruments[name] = instrument
 
 func get_instrument(name: String) -> Instrument:
