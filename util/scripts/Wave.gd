@@ -7,7 +7,7 @@ var zero: Color = Color.BLACK:
 var wave_color: Color = Color.GREEN_YELLOW:
 	set(val): set_wave(val)
 
-func _init(audio: AudioStream):
+func _init(audio: AudioStreamWAV):
 	data = audio.data
 	queue_redraw()
 

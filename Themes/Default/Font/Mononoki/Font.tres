@@ -1,7 +1,11 @@
-[gd_resource type="DynamicFont" load_steps=2 format=2]
+[gd_resource type="FontFile" load_steps=2 format=3 uid="uid://cgoku3dq1sy7x"]
 
-[ext_resource path="res://Themes/Default/Font/Mononoki/Mononoki.ttf" type="DynamicFontData" id=1]
+[ext_resource type="FontFile" uid="uid://d0rfi8t85uhd" path="res://Themes/Default/Font/Mononoki/Mononoki.ttf" id="1"]
 
 [resource]
-use_filter = true
-font_data = ExtResource( 1 )
+fallbacks = Array[Font]([ExtResource("1")])
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0

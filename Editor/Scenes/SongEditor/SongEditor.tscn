@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://cg6lcq4f2mrgq" path="res://Editor/Scenes/SongScriptEditor/SongScriptEditor.tscn" id="1"]
 [ext_resource type="Script" uid="uid://ccqewlrwg8frv" path="res://Editor/Scenes/SongEditor/SongEditor.gd" id="2"]
-[ext_resource type="PackedScene" uid="uid://b4hc2xsvkl52r" path="res://util/Sequencer/Sequencer.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://b4hc2xsvkl52r" path="res://Editor/Scenes/ControlPanel/ControlPanel.tscn" id="3"]
 
 [node name="SongEditor" type="VBoxContainer"]
 anchors_preset = 15
@@ -54,5 +54,4 @@ unique_name_in_owner = true
 
 [node name="Sequencer" parent="." instance=ExtResource("3")]
 unique_name_in_owner = true
-
-[connection signal="playback_finished" from="Sequencer" to="." method="_on_Sequencer_playback_finished"]
+layout_mode = 2

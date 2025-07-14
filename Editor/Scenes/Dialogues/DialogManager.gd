@@ -1,6 +1,7 @@
 class_name DialogManager extends Control
 
 @onready var documents_dir = OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
+@onready var file_dialog: FileDialog = %FileDialog
 
 # Progress
 func progress(text: String) -> ProgressBar:

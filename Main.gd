@@ -16,7 +16,7 @@ func _ready():
 	# Load instruments
 	var progress = %DialogManager.progress("Loading...")
 	GoDAW.loading_progress_max_value_changed.connect(progress.set_max)
-	GoDAW.loading_progress_value_changed.connect(func(_v): progress.value += 1)
+	GoDAW.loading_progress_value_changed.connect(func(): progress.value += 1)
 	GoDAW.loading_instrument_changed.connect(%DialogManager.progress)
 	await GoDAW.load_instruments()
 	%DialogManager.hide_progress()

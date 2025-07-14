@@ -12,6 +12,8 @@ signal track_pressed(name)
 @onready var SCRIPT_LOCATION = OS.get_user_data_dir() + "/song.gd"
 @onready var BIN = OS.get_executable_path()
 @onready var sequencer: Sequencer = %Sequencer
+@onready var song_script_editor: CodeEdit = %SongScriptEditor
+
 
 var ERROR_REGEX = RegEx.new()
 const SONG_PATH = "user://song.gd"
