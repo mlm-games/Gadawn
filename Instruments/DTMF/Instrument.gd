@@ -31,7 +31,7 @@ func _init():
 	super("DTMF")
 
 func waveform(t: float) -> float:
-	if self.current_key != "":
+	if current_key != "":
 		var indices = KEYS[current_key]
 		var amp = (
 			Waveforms.sine(t, FREQ_ROWS[indices[0]], 0) +
@@ -42,9 +42,9 @@ func waveform(t: float) -> float:
 		return 0.0
 
 func play_note(note: Note):
-	self.current_key = note.instrument_data
+	current_key = note.instrument_data
 	super.play_note(note)
 
 func stop_note(note: Note):
-	self.current_key = ""
+	current_key = ""
 	super.stop_note(note)

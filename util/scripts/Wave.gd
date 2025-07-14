@@ -31,7 +31,7 @@ func sign_extend(value, bits):
 func _draw():
 	var start = Vector2(0, 0)
 	draw_line(Vector2.ZERO, Vector2(5000, 0), zero, 5)
-	for i in self.data.size():
-		var end = Vector2(start.x + (10 * i / float(self.data.size())), sign_extend(-self.data[i], 8))
+	for i in data.size():
+		var end = Vector2(start.x + (10 * i / float(data.size())), sign_extend(-data[i], 8))
 		draw_line(start, end, wave_color, 2)
 		start = end

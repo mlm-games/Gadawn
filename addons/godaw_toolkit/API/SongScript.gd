@@ -5,7 +5,7 @@ class_name SongScript
 var sequence: SongSequence
 
 func _init():
-	self.sequence = SongSequence.new()
+	sequence = SongSequence.new()
 
 func track(instrument: String, notes: Array):
 	var track = Track.new()
@@ -13,7 +13,7 @@ func track(instrument: String, notes: Array):
 	# Convenient for nested patterns
 	track.notes = pattern(notes)
 
-	self.sequence.add_track(track)
+	sequence.add_track(track)
 
 func pattern(notes: Array, repeat: int = 1, start_delta: float = 0.0) -> Array:
 	if notes.is_empty(): return []

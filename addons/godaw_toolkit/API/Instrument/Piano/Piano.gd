@@ -34,7 +34,7 @@ func create_sample(freq: float) -> AudioStream:
 	# Start sampling
 	for t in sample_end:
 		# Call waveform function at each sample interval
-		var amplitude = self.waveform(float(t) / mix_rate, freq)
+		var amplitude = waveform(float(t) / mix_rate, freq)
 		# Store into sample buffer
 		sample.append_data(amplitude)
 

@@ -31,11 +31,11 @@ func to_hertz(key_no):
 	return pow(OCTAVE_FACTOR, (key_no - 69)) * 440
 
 func play_note(note: Note):
-	self.currently_playing[note.instrument_data.key] = note.instrument_data
-	self.currently_playing[note.instrument_data.key].end_t = note.duration
+	currently_playing[note.instrument_data.key] = note.instrument_data
+	currently_playing[note.instrument_data.key].end_t = note.duration
 	super.play_note(note)
 
 func stop_note(note: Note):
-	self.currently_playing.erase(note.instrument_data.key)
-	if self.currently_playing.size() == 0:
+	currently_playing.erase(note.instrument_data.key)
+	if currently_playing.size() == 0:
 		super.stop_note(note)
