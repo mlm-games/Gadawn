@@ -1,9 +1,60 @@
-[gd_scene format=3 uid="uid://pkt7eyynei58"]
+[gd_scene load_steps=2 format=3 uid="uid://pkt7eyynei58"]
+
+[ext_resource type="Script" uid="uid://bjp81b27r2pn1" path="res://editor/scenes/dialogues/track_editor/track_editor.gd" id="1"]
 
 [node name="TrackEditor" type="Window"]
 oversampling_override = 1.0
+title = "Track Editor"
+position = Vector2i(0, 36)
+size = Vector2i(600, 400)
+script = ExtResource("1")
 
-[node name="HBoxContainer" type="HBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+
+[node name="InstrumentLabel" type="Label" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Instrument: "
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="NotesContainer" type="VBoxContainer" parent="VBoxContainer/ScrollContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="AddNoteButton" type="Button" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Add Note"
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+alignment = 2
+
+[node name="CancelButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Cancel"
+
+[node name="ConfirmButton" type="Button" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+text = "Confirm"
+
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/CancelButton" to="." method="hide"]
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/ConfirmButton" to="." method="_on_confirm_pressed"]

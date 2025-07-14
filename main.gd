@@ -152,10 +152,21 @@ func _on_top_menu_save_as_pressed():
 	_save(file_path)
 
 func _save(file_path: String):
-	CurrentProject.project.song_script = song_editor.get_script_text()
+	if CurrentProject.project.project_type == Project.PROJECT_TYPE.SONGSCRIPT:
+		CurrentProject.project.song_script = song_editor.get_script_text()
+	else:
+		# Save GUI tracks
+		var sequence = SongSequence.new()
+		for instrument_name in song_editor.gui_tracks:
+			var track = song_editor.gui_tracks[instrument_name]
+			if track.notes.size() > 0:
+				sequence.add_track(track)
+		CurrentProject.project.song_sequence = sequence
+	
 	var error = ResourceSaver.save(CurrentProject.project, file_path)
 	if error != OK:
 		dialog_manager.error("Failed to save project: " + error_string(error))
+
 
 func _on_top_menu_open_pressed():
 	var file_path = await dialog_manager.get_open_path("Open", ["*.tres; Godot Text Resource File", "*.res; Godot Resource File"])

@@ -14,6 +14,7 @@ script = ExtResource("2")
 layout_mode = 2
 
 [node name="Space" type="Control" parent="Timeline"]
+custom_minimum_size = Vector2(200, 20)
 layout_mode = 2
 
 [node name="Timeline" type="ColorRect" parent="Timeline"]
@@ -42,7 +43,16 @@ size_flags_vertical = 3
 
 [node name="Names" type="VBoxContainer" parent="TracksScroll/HBox"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
+
+[node name="VSeparator" type="VSeparator" parent="TracksScroll/HBox"]
+layout_mode = 2
+
+[node name="TracksContainer" type="VBoxContainer" parent="TracksScroll/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="SongScriptEditor" parent="." instance=ExtResource("1")]
 unique_name_in_owner = true
