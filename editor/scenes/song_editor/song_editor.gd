@@ -12,7 +12,7 @@ signal validation_requested_for_export
 const BASE_SONG_SCRIPT = """extends SongScript
 
 func song():
-	track("Square", [
+	track("square", [
 		# Place your notes here (start_delay, duration, {data})
 		note(0.0, 0.5, {"key": 60}),  # Middle C
 		note(0.5, 0.5, {"key": 62}),  # D
@@ -67,4 +67,4 @@ func get_script_text() -> String:
 	return song_script_editor.text
 
 func request_validation_for_export():
-	Main.instance.song_validator.validate_script(song_script_editor.text)
+	validation_requested_for_export.emit()

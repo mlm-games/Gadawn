@@ -32,6 +32,7 @@ func _ready():
 		init_menu(menu_node, menu_data.elements)
 		menu_node.get_popup().id_pressed.connect(_on_item_pressed.bind(menu_name))
 	
+	# Connect to project changes
 	CurrentProject.project_changed.connect(on_project_changed)
 
 func on_project_changed(project: Project):
@@ -52,6 +53,3 @@ func init_menu(menu, items):
 			menu.get_popup().add_separator()
 		else:
 			menu.get_popup().add_item(e)
-
-func _quit():
-	get_tree().quit()

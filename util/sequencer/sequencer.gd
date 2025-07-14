@@ -44,8 +44,8 @@ func sequence(new_sequence: SongSequence):
 	song.length = total_length
 	
 	if anim_player.has_animation("song"):
-		anim_player.remove_animation("song")
-	anim_player.add_animation("song", song)
+		anim_player.get_animation_library("").remove_animation("song")
+	anim_player.get_animation_library("").add_animation("song", song)
 
 func _process(_delta):
 	if playing and not paused:
