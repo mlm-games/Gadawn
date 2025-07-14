@@ -8,7 +8,8 @@ var mix_rate: float
 
 var t := 0.0
 
-func _init(instrument_name: String, mix_rate: float = 44100.0).(instrument_name):
+func _init(instrument_name: String, mix_rate: float = 44100.0):
+	(instrument_name)
 	self.mix_rate = mix_rate
 
 func _ready():
@@ -23,7 +24,7 @@ func _process(delta):
 		_fill_buffer()
 
 func _fill_buffer():
-	var buffer = PoolVector2Array()
+	var buffer = PackedVector2Array()
 	self.playback = self.player.get_stream_playback()
 	for _i in self.playback.get_frames_available():
 		buffer.append(Vector2.ONE * waveform(t))
@@ -40,5 +41,5 @@ func play_note(_note: Note):
 
 func stop_note(_note: Note):
 	player.stop()
-	yield(player, "finished")
+	await player.finished
 	playback.clear_buffer()

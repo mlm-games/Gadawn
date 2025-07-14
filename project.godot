@@ -6,91 +6,16 @@
 ;   [section] ; section goes between []
 ;   param=value ; assign values to parameters
 
-config_version=4
-
-_global_script_classes=[ {
-"base": "Node",
-"class": "Instrument",
-"language": "GDScript",
-"path": "res://addons/godaw_toolkit/API/Instrument/Instrument.gd"
-}, {
-"base": "Instrument",
-"class": "LiveSynthesisInstrument",
-"language": "GDScript",
-"path": "res://addons/godaw_toolkit/API/Instrument/LiveSynthesisInstrument.gd"
-}, {
-"base": "Resource",
-"class": "MIDI",
-"language": "GDScript",
-"path": "res://util/Midi/MIDI.gd"
-}, {
-"base": "Resource",
-"class": "Note",
-"language": "GDScript",
-"path": "res://util/Sequencer/Note.gd"
-}, {
-"base": "Instrument",
-"class": "PianoInstrument",
-"language": "GDScript",
-"path": "res://addons/godaw_toolkit/API/Instrument/Piano/Piano.gd"
-}, {
-"base": "Resource",
-"class": "Project",
-"language": "GDScript",
-"path": "res://addons/godaw_toolkit/API/Project.gd"
-}, {
-"base": "Reference",
-"class": "SampleTools",
-"language": "GDScript",
-"path": "res://addons/godaw_toolkit/API/SampleTools.gd"
-}, {
-"base": "Resource",
-"class": "SongScript",
-"language": "GDScript",
-"path": "res://addons/godaw_toolkit/API/SongScript.gd"
-}, {
-"base": "Resource",
-"class": "SongSequence",
-"language": "GDScript",
-"path": "res://addons/godaw_toolkit/API/SongSequence.gd"
-}, {
-"base": "Reference",
-"class": "Track",
-"language": "GDScript",
-"path": "res://util/Sequencer/Track.gd"
-}, {
-"base": "Node2D",
-"class": "Wave",
-"language": "GDScript",
-"path": "res://util/scripts/Wave.gd"
-}, {
-"base": "Reference",
-"class": "Waveforms",
-"language": "GDScript",
-"path": "res://addons/godaw_toolkit/API/Waveforms.gd"
-} ]
-_global_script_class_icons={
-"Instrument": "",
-"LiveSynthesisInstrument": "",
-"MIDI": "",
-"Note": "",
-"PianoInstrument": "",
-"Project": "",
-"SampleTools": "",
-"SongScript": "",
-"SongSequence": "",
-"Track": "",
-"Wave": "",
-"Waveforms": ""
-}
+config_version=5
 
 [application]
 
 config/name="GoDAW"
 run/main_scene="res://Main.tscn"
+config/features=PackedStringArray("4.5")
 run/low_processor_mode=true
+boot_splash/bg_color=Color(0.109804, 0.109804, 0.141176, 1)
 boot_splash/image="res://Docs/Splash.png"
-boot_splash/bg_color=Color( 0.109804, 0.109804, 0.141176, 1 )
 config/icon="res://Docs/Icon.svg"
 
 [autoload]
@@ -104,21 +29,21 @@ window/size/height=720
 
 [editor_plugins]
 
-enabled=PoolStringArray( "res://addons/godaw_toolkit/plugin.cfg" )
+enabled=PackedStringArray("res://addons/godaw_toolkit/plugin.cfg")
 
 [input]
 
 scroll_up={
 "deadzone": 0.5,
-"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":4,"pressed":false,"doubleclick":false,"script":null)
- ]
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":0,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":4,"canceled":false,"pressed":false,"double_click":false,"script":null)
+]
 }
 scroll_down={
 "deadzone": 0.5,
-"events": [ Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":5,"pressed":false,"doubleclick":false,"script":null)
- ]
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":0,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":5,"canceled":false,"pressed":false,"double_click":false,"script":null)
+]
 }
 
 [rendering]
 
-environment/default_clear_color=Color( 0.0941176, 0.0941176, 0.121569, 1 )
+environment/default_clear_color=Color(0.0941176, 0.0941176, 0.121569, 1)

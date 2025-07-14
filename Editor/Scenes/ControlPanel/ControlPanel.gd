@@ -4,7 +4,7 @@ signal play()
 signal pause()
 signal stop()
 
-onready var buttons = {
+@onready var buttons = {
 	"Play": $PlayButton,
 	"Pause": $PauseButton,
 	"Stop": $StopButton,
@@ -30,7 +30,7 @@ func _on_StopButton_pressed():
 	buttons.Stop.disabled = true
 
 func _on_finished(_n = ""):
-	yield(get_tree(), "idle_frame")
+	await get_tree().idle_frame
 	buttons.Play.disabled = false
 	buttons.Pause.disabled = true
 	buttons.Stop.disabled = true

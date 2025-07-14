@@ -1,16 +1,16 @@
 extends Control
 
-onready var progress_dialog: PopupDialog = $ProgressDialog
-onready var progress_label:Label = $ProgressDialog/VBoxContainer/Label
-onready var progress_bar: ProgressBar = $ProgressDialog/VBoxContainer/ProgressBar
+@onready var progress_dialog: PopupDialog = $ProgressDialog
+@onready var progress_label:Label = $ProgressDialog/VBoxContainer/Label
+@onready var progress_bar: ProgressBar = $ProgressDialog/VBoxContainer/ProgressBar
 
-onready var error_dialog: WindowDialog = $ErrorDialog
-onready var error_label: Label = $"%ErrorMessage"
+@onready var error_dialog: WindowDialog = $ErrorDialog
+@onready var error_label: Label = $"%ErrorMessage"
 
-onready var loading_dialog: PopupDialog = $Loading
-onready var file_dialog: FileDialog = $FileDialog
+@onready var loading_dialog: PopupDialog = $Loading
+@onready var file_dialog: FileDialog = $FileDialog
 
-onready var documents_dir = OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
+@onready var documents_dir = OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
 
 # Progress
 func progress(text: String) -> ProgressBar:

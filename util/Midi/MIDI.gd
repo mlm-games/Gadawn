@@ -73,9 +73,9 @@ enum SystemExclusiveStatus {
 
 # Vars
 var tracks = []
-export var tempo = 0
-export var bpm = 120
-export var ppq = 0.0
+@export var tempo = 0
+@export var bpm = 120
+@export var ppq = 0.0
 
 
 # function to parse files to midi
@@ -259,7 +259,7 @@ func parse_file(filename: String = "") -> bool:
 
 # Read n length bytes from file, and constructs a string.
 func read_string(file: File, n) -> String:
-	var s := PoolByteArray()
+	var s := PackedByteArray()
 	for _i in range(n): s.append(file.get_8())
 	return s.get_string_from_ascii()
 

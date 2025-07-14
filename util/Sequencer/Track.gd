@@ -1,4 +1,4 @@
-class_name Track extends Reference
+class_name Track extends RefCounted
 
 var notes: Array = []
 var instrument: String

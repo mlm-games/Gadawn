@@ -1,6 +1,6 @@
 extends Node
 
-onready var script_editor = get_parent()
+@onready var script_editor = get_parent()
 
 func keyword(keyword: String):
 	script_editor.add_keyword_color(keyword, Color("e8a2af"))
@@ -14,7 +14,7 @@ func type(type_name: String):
 func _ready():
 	keyword("extends")
 	keyword("func")
-	keyword("onready")
+	keyword("@onready")
 	keyword("var")
 	keyword("const")
 	keyword("pass")

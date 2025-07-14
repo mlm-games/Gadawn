@@ -1,10 +1,10 @@
-extends Node
+class_name Sequencer extends Node
 
 signal playback_finished()
 signal on_note(progress)
 
-export var INSTRUMENTS = {}
-onready var player = $AnimationPlayer
+@export var INSTRUMENTS = {}
+@onready var player = $AnimationPlayer
 
 # Data
 var data: SongSequence
@@ -40,7 +40,7 @@ func sequence(sequence: SongSequence):
 				"args": [track.instrument, note]
 			})
 
-		song.length = 0 if track.notes.empty() else current_time + track.notes[-1].duration
+		song.length = 0 if track.notes.is_empty() else current_time + track.notes[-1].duration
 
 	player.add_animation("song", song)
 

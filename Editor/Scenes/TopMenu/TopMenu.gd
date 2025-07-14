@@ -4,15 +4,15 @@ signal new_pressed()
 signal open_pressed()
 signal save_pressed()
 signal save_as_pressed()
-signal export_pressed()
+signal @export_pressed()
 signal quit_pressed()
 
-onready var menus = {
+@onready var menus = {
 	"Song": {
 		"node": $SongMenu,
 		"elements": { "New": "new_pressed", "Open": "open_pressed",
 			 "Save": "save_pressed", "Save as...": "",
-			 "Export": "export_pressed" ,"Separator": "",
+			 "@export": "@export_pressed" ,"Separator": "",
 			 "Quit": "quit_pressed" }
 	},
 	"Edit": {

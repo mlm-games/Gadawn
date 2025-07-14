@@ -2,15 +2,14 @@ extends Control
 
 signal instrument_chosen(instrument)
 
-onready var title: Label = $Title/Label
-onready var instrument_container = $Panel/Instruments/VBoxContainer
+@onready var title: Label = $Title/Label
+@onready var instrument_container = $Panel/Instruments/VBoxContainer
 
 func reload_instruments():
-	var dir = Directory.new()
-	dir.open("res://Instruments")
+	var dir = DirAccess.open("res://Instruments")
 
 	for instrument in GoDAW.instruments:
-		var btn = ToolButton.new()
+		var btn = Button.new()
 
 		var icon = null
 		if dir.file_exists("./%s/Icon.png" % instrument):
@@ -22,7 +21,7 @@ func reload_instruments():
 		btn.text = instrument if instrument.length() <= 20 else instrument.substr(0, 17) + "..."
 		btn.flat = false
 		btn.focus_mode = Control.FOCUS_NONE
-		btn.connect("pressed", self, "_on_Instrument_pressed", [btn])
+		btn.pressed.connect(_on_Instrument_pressed.bind(btn))
 		instrument_container.add_child(btn)
 
 func _on_Instrument_pressed(button) -> void:

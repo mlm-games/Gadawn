@@ -9,8 +9,8 @@ signal done_error_check(error)
 signal song_script_error(error)
 signal track_pressed (name)
 
-onready var SCRIPT_LOCATION = OS.get_user_data_dir() + "/song.gd"
-onready var BIN = OS.get_executable_path()
+@onready var SCRIPT_LOCATION = OS.get_user_data_dir() + "/song.gd"
+@onready var BIN = OS.get_executable_path()
 var ERROR_REGEX = RegEx.new()
 const SONG_PATH = "user://song.gd"
 
@@ -29,12 +29,12 @@ var error_text = ""
 var in_file = ""
 var song_file: File
 
-onready var thread = Thread.new()
-onready var names = $TracksScroll/HBox/Names
-onready var song_script_editor = $SongScriptEditor
-onready var track_scroll = $TracksScroll
-onready var sequencer = $Sequencer
-onready var instrument_container = $InstrumentContainer
+@onready var thread = Thread.new()
+@onready var names = $TracksScroll/HBox/Names
+@onready var song_script_editor = $SongScriptEditor
+@onready var track_scroll = $TracksScroll
+@onready var sequencer = $Sequencer
+@onready var instrument_container = $InstrumentContainer
 
 func _ready():
 	ERROR_REGEX.compile("SCRIPT ERROR: (.*?)\\n(?:.*?):([0-9]+)")
@@ -103,7 +103,7 @@ func sequence():
 
 func _on_play():
 	sequence()
-	yield(self, "done_error_handling")
+	await done_error_handling
 	sequencer.play()
 
 func _on_pause():

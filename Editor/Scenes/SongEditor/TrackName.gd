@@ -1,6 +1,6 @@
 extends ToolButton
 
-onready var delete_confirm: ConfirmationDialog = $DeleteConfirm
+@onready var delete_confirm: ConfirmationDialog = $DeleteConfirm
 
 func set_instrument(icon: Texture, instrument_name: String) -> void:
 	self.icon = icon

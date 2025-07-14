@@ -2,8 +2,8 @@ extends ConfirmationDialog
 
 signal new_project(project)
 
-onready var project_name = $HBox/data/ProjectName
-onready var project_type = $HBox/data/ProjectType
+@onready var project_name = $HBox/data/ProjectName
+@onready var project_type = $HBox/data/ProjectType
 
 func _ready():
 	project_type.add_item("GUI", Project.PROJECT_TYPE.GUI)
