@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cg6lcq4f2mrgq"]
 
-[ext_resource type="Script" uid="uid://dtoype8h4j30n" path="res://Editor/scenes/SongScriptEditor/song_script_editor.gd" id="1"]
+[ext_resource type="Script" uid="uid://dtoype8h4j30n" path="res://editor/scenes/song_script_editor/song_script_editor.gd" id="1"]
 
 [node name="SongScriptEditor" type="CodeEdit"]
 offset_right = 8.0

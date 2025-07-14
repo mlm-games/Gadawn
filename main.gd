@@ -29,7 +29,8 @@ func _ready():
 		dir.remove("song.gd")
 
 	# Project setup
-	set_project(Project.new())
+	var default_project = Project.new("Untitled Song", Project.PROJECT_TYPE.SONGSCRIPT)
+	set_project(default_project)
 
 func _on_top_menu_export_pressed():
 	%DialogManager.file("Export", FileDialog.FILE_MODE_SAVE_FILE, ["*.wav ; Wav Files"])

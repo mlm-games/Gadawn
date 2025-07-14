@@ -39,17 +39,61 @@ func _ready():
 	done_error_handling.connect(_on_sequence_complete)
 
 func add_track(instrument: Button):
-	if !gui: return
-	var name_button: Button = track_name.instantiate()
-	name_button.set_instrument(instrument.icon, instrument.text)
-	%Names.add_child(name_button)
-	name_button.pressed.connect(func(): track_pressed.emit(instrument.text))
+	if gui:
+		# GUI mode - add visual track
+		var name_button: Button = track_name.instantiate()
+		name_button.set_instrument(instrument.icon, instrument.text)
+		%Names.add_child(name_button)
+		name_button.pressed.connect(func(): track_pressed.emit(instrument.text))
+	else:
+		# SongScript mode - insert code template
+		var _cursor_line = %SongScriptEditor.get_caret_line()
+		var current_text = %SongScriptEditor.text
+		
+		# Find the song() function
+		var song_func_line = -1
+		var lines = current_text.split("\n")
+		for i in range(lines.size()):
+			if "func song():" in lines[i]:
+				song_func_line = i
+				break
+		
+		if song_func_line != -1:
+			# Insert a new track after the last track or after func song():
+			var insert_line = song_func_line + 1
+			var indent = "\t"
+			
+			# Find last track to insert after it
+			for i in range(song_func_line + 1, lines.size()):
+				if indent + "track(" in lines[i]:
+					insert_line = i + 1
+					# Find the closing bracket
+					var bracket_count = 1
+					for j in range(i + 1, lines.size()):
+						if "[" in lines[j]:
+							bracket_count += 1
+						if "]" in lines[j]:
+							bracket_count -= 1
+							if bracket_count == 0:
+								insert_line = j + 1
+								break
+			
+			# Create new track code
+			var new_track = "\n" + indent + 'track("%s", [\n' % instrument.text
+			new_track += indent + "\t# Add your notes here\n"
+			new_track += indent + '\tnote(0.0, 0.5, {"key": 60}),  # Middle C\n'
+			new_track += indent + "])"
+			
+			# Insert at the right position
+			%SongScriptEditor.set_caret_line(insert_line)
+			%SongScriptEditor.insert_text_at_caret(new_track)
 	
-	# Add instrument to sequencer
+	# Add instrument to sequencer (needed for both modes)
 	var inst := GoDawn.get_instrument(instrument.text)
 	if inst:
 		$Sequencer.INSTRUMENTS[instrument.text] = inst
 		%InstrumentContainer.add_child(inst)
+
 
 func check_error():
 	# Save script to file
