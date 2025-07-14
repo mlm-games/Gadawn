@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://c0skfqv20xtna"]
-
-[ext_resource type="Script" uid="uid://cyc40gcgubir3" path="res://Instruments/TripleOsc/instrument.gd" id="1"]
-
-[node name="TripleOsc" type="Node"]
-script = ExtResource("1")

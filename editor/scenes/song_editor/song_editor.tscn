@@ -1,0 +1,56 @@
+[gd_scene load_steps=4 format=3 uid="uid://d0640825wwiqj"]
+
+[ext_resource type="PackedScene" uid="uid://cg6lcq4f2mrgq" path="res://Editor/scenes/SongScriptEditor/SongScriptEditor.tscn" id="1"]
+[ext_resource type="Script" uid="uid://ccqewlrwg8frv" path="res://Editor/scenes/SongEditor/SongEditor.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://b4hc2xsvkl52r" path="res://util/sequencer/Sequencer.tscn" id="3"]
+
+[node name="SongEditor" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("2")
+
+[node name="Timeline" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Space" type="Control" parent="Timeline"]
+layout_mode = 2
+
+[node name="Timeline" type="ColorRect" parent="Timeline"]
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(0.0666667, 0.0666667, 0.0823529, 1)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Timeline/Timeline"]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Space2" type="Control" parent="Timeline"]
+layout_mode = 2
+
+[node name="TracksScroll" type="ScrollContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HBox" type="HBoxContainer" parent="TracksScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Names" type="VBoxContainer" parent="TracksScroll/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="SongScriptEditor" parent="." instance=ExtResource("1")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="InstrumentContainer" type="Node" parent="."]
+unique_name_in_owner = true
+
+[node name="Sequencer" parent="." instance=ExtResource("3")]
+unique_name_in_owner = true

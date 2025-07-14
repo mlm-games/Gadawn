@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://4caf302uqjbx"]
+
+[ext_resource type="Script" uid="uid://btavn7sonojfy" path="res://Instruments/dtmf/Instrument.gd" id="1"]
+
+[node name="DTMF" type="Node"]
+script = ExtResource("1")

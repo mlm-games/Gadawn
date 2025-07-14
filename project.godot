@@ -11,16 +11,16 @@ config_version=5
 [application]
 
 config/name="Godawn"
-run/main_scene="res://Main.tscn"
+run/main_scene="uid://dg4ppy8ynqeux"
 config/features=PackedStringArray("4.5")
 run/low_processor_mode=true
 boot_splash/bg_color=Color(0.109804, 0.109804, 0.141176, 1)
-boot_splash/image="res://Docs/Splash.png"
-config/icon="res://Docs/Icon.svg"
+boot_splash/image="uid://b2uvtwbi0tie0"
+config/icon="res://docs/icon.svg"
 
 [autoload]
 
-GoDAW="*res://addons/godaw_toolkit/API/GoDAW.gd"
+GoDawn="*res://addons/godaw_toolkit/api/go_dawn.gd"
 
 [debug]
 
