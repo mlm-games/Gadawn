@@ -1,7 +1,6 @@
-[gd_scene load_steps=9 format=3 uid="uid://dg4ppy8ynqeux"]
+[gd_scene load_steps=8 format=3 uid="uid://dg4ppy8ynqeux"]
 
 [ext_resource type="PackedScene" uid="uid://b4hc2xsvkl52r" path="res://util/sequencer/sequencer.tscn" id="1"]
-[ext_resource type="Theme" uid="uid://cee0yehrjy3kp" path="res://themes/default/go_daw_theme.tres" id="2"]
 [ext_resource type="PackedScene" uid="uid://d0640825wwiqj" path="res://editor/scenes/song_editor/song_editor.tscn" id="3"]
 [ext_resource type="Script" uid="uid://6pxioyca0vtd" path="res://main.gd" id="4"]
 [ext_resource type="PackedScene" uid="uid://cluyvkosdd3n8" path="res://editor/scenes/instruments/instruments_panel.tscn" id="5"]
@@ -13,7 +12,6 @@
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme = ExtResource("2")
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8

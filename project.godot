@@ -35,6 +35,10 @@ window/size/height=720
 
 enabled=PackedStringArray("res://addons/godaw_toolkit/plugin.cfg")
 
+[gui]
+
+theme/custom="uid://cee0yehrjy3kp"
+
 [input]
 
 scroll_up={

@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://dgmbqblpnaqno"]
 
-[ext_resource type="Texture2D" uid="uid://cjngajtkecukg" path="res://Themes/default/Images/default_icon.png" id="1"]
-[ext_resource type="Script" uid="uid://djy0frgeokldb" path="res://Editor/scenes/SongEditor/TrackName.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://cjngajtkecukg" path="res://themes/default/Images/default_icon.png" id="1"]
+[ext_resource type="Script" uid="uid://djy0frgeokldb" path="res://editor/scenes/song_editor/track_name.gd" id="2"]
 
 [node name="InstrumentToggle" type="Button"]
 focus_mode = 0

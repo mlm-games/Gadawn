@@ -1,11 +1,11 @@
 [gd_scene load_steps=8 format=3 uid="uid://b4hc2xsvkl52r"]
 
-[ext_resource type="Texture2D" uid="uid://bo534wecuweve" path="res://Themes/default/ButtonIcons/Play_Active.svg" id="1"]
-[ext_resource type="Texture2D" uid="uid://blc4nnaowwa2a" path="res://Themes/default/ButtonIcons/Pause_Inactive.svg" id="2"]
-[ext_resource type="Texture2D" uid="uid://hh3e7vlftfxg" path="res://Themes/default/ButtonIcons/Stop_Active.svg" id="3"]
-[ext_resource type="Texture2D" uid="uid://cjp7c7f0yqgo0" path="res://Themes/default/ButtonIcons/Play_Inactive.svg" id="4"]
-[ext_resource type="Texture2D" uid="uid://d307aq7cwn6de" path="res://Themes/default/ButtonIcons/Pause_Active.svg" id="5"]
-[ext_resource type="Texture2D" uid="uid://ck512m3jqaer" path="res://Themes/default/ButtonIcons/Stop_Inactive.svg" id="6"]
+[ext_resource type="Texture2D" uid="uid://bo534wecuweve" path="res://themes/default/ButtonIcons/Play_Active.svg" id="1"]
+[ext_resource type="Texture2D" uid="uid://blc4nnaowwa2a" path="res://themes/default/ButtonIcons/Pause_Inactive.svg" id="2"]
+[ext_resource type="Texture2D" uid="uid://hh3e7vlftfxg" path="res://themes/default/ButtonIcons/Stop_Active.svg" id="3"]
+[ext_resource type="Texture2D" uid="uid://cjp7c7f0yqgo0" path="res://themes/default/ButtonIcons/Play_Inactive.svg" id="4"]
+[ext_resource type="Texture2D" uid="uid://d307aq7cwn6de" path="res://themes/default/ButtonIcons/Pause_Active.svg" id="5"]
+[ext_resource type="Texture2D" uid="uid://ck512m3jqaer" path="res://themes/default/ButtonIcons/Stop_Inactive.svg" id="6"]
 [ext_resource type="Script" uid="uid://clv0cqsfjcwvx" path="res://Editor/scenes/ControlPanel/ControlPanel.gd" id="7"]
 
 [node name="ControlPanel" type="PanelContainer"]
