@@ -1,72 +1,58 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://d0640825wwiqj"]
 
-[ext_resource path="res://Editor/Scenes/SongScriptEditor/SongScriptEditor.tscn" type="PackedScene" id=1]
-[ext_resource path="res://Editor/Scenes/SongEditor/SongEditor.gd" type="Script" id=2]
-[ext_resource path="res://util/Sequencer/Sequencer.tscn" type="PackedScene" id=3]
+[ext_resource type="PackedScene" uid="uid://cg6lcq4f2mrgq" path="res://Editor/Scenes/SongScriptEditor/SongScriptEditor.tscn" id="1"]
+[ext_resource type="Script" uid="uid://ccqewlrwg8frv" path="res://Editor/Scenes/SongEditor/SongEditor.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://b4hc2xsvkl52r" path="res://util/Sequencer/Sequencer.tscn" id="3"]
 
 [node name="SongEditor" type="VBoxContainer"]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = ExtResource( 2 )
+script = ExtResource("2")
 
 [node name="Timeline" type="HBoxContainer" parent="."]
-margin_right = 1280.0
-margin_bottom = 10.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
+layout_mode = 2
 
 [node name="Space" type="Control" parent="Timeline"]
-margin_right = 235.0
-margin_bottom = 10.0
-rect_min_size = Vector2( 235, 0 )
+layout_mode = 2
 
 [node name="Timeline" type="ColorRect" parent="Timeline"]
-margin_left = 239.0
-margin_right = 1271.0
-margin_bottom = 10.0
-rect_min_size = Vector2( 750, 10 )
+layout_mode = 2
 size_flags_horizontal = 3
-color = Color( 0.0666667, 0.0666667, 0.0823529, 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+color = Color(0.0666667, 0.0666667, 0.0823529, 1)
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Timeline/Timeline"]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 
 [node name="Space2" type="Control" parent="Timeline"]
-margin_left = 1275.0
-margin_right = 1280.0
-margin_bottom = 10.0
-rect_min_size = Vector2( 5, 0 )
+layout_mode = 2
 
 [node name="TracksScroll" type="ScrollContainer" parent="."]
+unique_name_in_owner = true
 visible = false
-margin_top = 14.0
-margin_right = 1280.0
-margin_bottom = 720.0
+layout_mode = 2
 size_flags_vertical = 3
-scroll_horizontal_enabled = false
 
 [node name="HBox" type="HBoxContainer" parent="TracksScroll"]
-margin_right = 1280.0
-margin_bottom = 706.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Names" type="VBoxContainer" parent="TracksScroll/HBox"]
-margin_bottom = 706.0
+unique_name_in_owner = true
+layout_mode = 2
 
-[node name="SongScriptEditor" parent="." instance=ExtResource( 1 )]
+[node name="SongScriptEditor" parent="." instance=ExtResource("1")]
+unique_name_in_owner = true
 visible = false
-margin_top = 14.0
-margin_right = 1280.0
-margin_bottom = 720.0
+layout_mode = 2
 
 [node name="InstrumentContainer" type="Node" parent="."]
+unique_name_in_owner = true
 
-[node name="Sequencer" parent="." instance=ExtResource( 3 )]
+[node name="Sequencer" parent="." instance=ExtResource("3")]
+unique_name_in_owner = true
 
 [connection signal="playback_finished" from="Sequencer" to="." method="_on_Sequencer_playback_finished"]

@@ -4,126 +4,132 @@ extends VBoxContainer
 signal playback_finished()
 signal start_loading()
 signal stop_loading()
-signal done_error_handling(done)
+signal done_error_handling()
 signal done_error_check(error)
 signal song_script_error(error)
-signal track_pressed (name)
+signal track_pressed(name)
 
 @onready var SCRIPT_LOCATION = OS.get_user_data_dir() + "/song.gd"
 @onready var BIN = OS.get_executable_path()
+@onready var sequencer: Sequencer = %Sequencer
+
 var ERROR_REGEX = RegEx.new()
 const SONG_PATH = "user://song.gd"
 
 const BASE_SONG_SCRIPT = """extends SongScript
 
-
 func song():
 	track("%s", [
 		# Place your notes here
+		note(0.0, 0.5, {"key": 60}),  # Middle C
+		note(0.5, 0.5, {"key": 62}),  # D
+		note(1.0, 0.5, {"key": 64}),  # E
 	])
-	pass"""
+"""
 
 var gui: bool = true
 var track_name = preload("./TrackName.tscn")
 var error_text = ""
 var in_file = ""
-var song_file: FileAccess
-
-@onready var thread = Thread.new()
-@onready var names = $TracksScroll/HBox/Names
-@onready var song_script_editor = $SongScriptEditor
-@onready var track_scroll = $TracksScroll
-@onready var sequencer = $Sequencer
-@onready var instrument_container = $InstrumentContainer
 
 func _ready():
 	ERROR_REGEX.compile("SCRIPT ERROR: (.*?)\\n(?:.*?):([0-9]+)")
 	done_error_check.connect(_after_error_check)
 
-# Takes a Button since it conveniently sends an icon and message
-# TODO: Not use button as param
 func add_track(instrument: Button):
 	if !gui: return
-	var name : Button = track_name.instantiate()
-	name.set_instrument(instrument.icon, instrument.text)
-	names.add_child(name)
-	name.pressed.connect(track_pressed.emit.bind(instrument.text))
+	var name_button: Button = track_name.instantiate()
+	name_button.set_instrument(instrument.icon, instrument.text)
+	%Names.add_child(name_button)
+	name_button.pressed.connect(func(): track_pressed.emit(instrument.text))
 	
-	# TODO: Hacky code
+	# Add instrument to sequencer
 	var inst := GoDAW.get_instrument(instrument.text)
-	$Sequencer.INSTRUMENTS[instrument.text] = inst
+	if inst:
+		$Sequencer.INSTRUMENTS[instrument.text] = inst
+		%InstrumentContainer.add_child(inst)
 
 func check_error():
-	# Error check
-	var err = []
-	#var _n = OS.execute(BIN, ["-s", SCRIPT_LOCATION, "--check-only", "--no-window"], true, err, true)
-	var error = ""
-	var regex_result = ERROR_REGEX.search(err[0])
-	if regex_result:
-		var regex_out = ERROR_REGEX.search(err[0]).get_strings()
-		error = "%s at SongScript:%s" % [regex_out[1], regex_out[2]]
-	emit_signal("done_error_check", error)
+	# Save script to file
+	var file = FileAccess.open(SONG_PATH, FileAccess.WRITE)
+	if file:
+		file.store_string(%SongScriptEditor.text)
+		file.close()
+	else:
+		done_error_check.emit("Failed to save script file")
+		return
+	
+	# Try to load and validate the script
+	var script = load(SONG_PATH)
+	if not script:
+		done_error_check.emit("Failed to load script")
+		return
+	
+	var instance = script.new()
+	if not instance.has_method("song"):
+		done_error_check.emit("Script has no song() method")
+		return
+	
+	done_error_check.emit("")
 
 func _after_error_check(error):
-	emit_signal("stop_loading")
+	stop_loading.emit()
 	error_text = error
 	if error:
-		emit_signal("song_script_error", error_text)
+		song_script_error.emit(error_text)
 		return false
 
 	error_text = ""
-	var song: SongScript = load("user://song.gd").new()
-	if !song.has_method("song"):
-		emit_signal("song_script_error", "Script has no song method")
-		return false
+	var song: SongScript = load(SONG_PATH).new()
 	song.sequence.tracks.clear()
 	song.song()
-	if song.sequence.tracks.size() != instrument_container.get_child_count():
-		sequencer.INSTRUMENTS.clear()
-		for instrument in instrument_container.get_children():
+	
+	# Update instruments if needed
+	if song.sequence.tracks.size() != %InstrumentContainer.get_child_count():
+		%Sequencer.INSTRUMENTS.clear()
+		for instrument in %InstrumentContainer.get_children():
 			instrument.queue_free()
 		for track in song.sequence.tracks:
 			var inst = GoDAW.get_instrument(track.instrument)
-			sequencer.INSTRUMENTS[track.instrument] = inst
-			instrument_container.add_child(inst)
-	sequencer.sequence(song.sequence)
-	emit_signal("done_error_handling")
+			if inst:
+				%Sequencer.INSTRUMENTS[track.instrument] = inst
+				%InstrumentContainer.add_child(inst)
+	
+	%Sequencer.sequence(song.sequence)
+	done_error_handling.emit()
 
-# Return true if everything goes alright
 func sequence():
 	if !gui:
-		emit_signal("start_loading")
-		if in_file != song_script_editor.text:
-			song_file.open(SONG_PATH, FileAccess.WRITE_READ)
-			song_file.store_string(song_script_editor.text)
-			song_file.close()
-			in_file = song_script_editor.text
-			thread.start(check_error)
+		start_loading.emit()
+		if in_file != %SongScriptEditor.text:
+			in_file = %SongScriptEditor.text
+			check_error()
+		else:
+			done_error_handling.emit()
 
 func _on_play():
-	sequence()
-	await done_error_handling
-	sequencer.play()
+	await sequence()
+	%Sequencer.play()
 
 func _on_pause():
-	sequencer.pause()
+	%Sequencer.pause()
 
 func _on_stop():
-	sequencer.stop()
+	%Sequencer.stop()
 
 func _on_Sequencer_playback_finished():
-	emit_signal("playback_finished")
-
-func _on_TrackEditor_sequence_song(sequence):
-	sequencer.sequence(sequence)
+	playback_finished.emit()
 
 func project_changed(project: Project):
 	gui = true if project.project_type == Project.PROJECT_TYPE.GUI else false
-	song_script_editor.visible = !gui
-	track_scroll.visible = gui
-	for name in names.get_children():
+	%SongScriptEditor.visible = !gui
+	%TracksScroll.visible = gui
+	
+	# Clear existing tracks
+	for name in %Names.get_children():
 		name.queue_free()
+	
 	if project.song_script:
-		song_script_editor.text = project.song_script
+		%SongScriptEditor.text = project.song_script
 	else:
-		song_script_editor.text = BASE_SONG_SCRIPT % "Square"
+		%SongScriptEditor.text = BASE_SONG_SCRIPT % "Square"

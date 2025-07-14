@@ -4,7 +4,6 @@ signal playback_finished()
 signal on_note(progress)
 
 @export var INSTRUMENTS = {}
-@onready var player = $AnimationPlayer
 
 # Data
 var data: SongSequence
@@ -26,7 +25,7 @@ func sequence(sequence: SongSequence):
 		for note in track.notes:
 			note = note as Note
 
-			if song.track_find_key(track_index, current_time, 0, true) != -1:
+			if song.track_find_key(track_index, current_time, 0 as Animation.FindMode, true) != -1:
 				current_time += 0.001
 
 			current_time += note.note_start_delta
@@ -42,37 +41,36 @@ func sequence(sequence: SongSequence):
 
 		song.length = 0 if track.notes.is_empty() else current_time + track.notes[-1].duration
 
-	player.add_animation("song", song)
+	%AnimationPlayer.add_animation("song", song)
 
 func play_note(instrument_name: String, note):
-	emit_signal("on_note", (player.current_animation_position/player.current_animation_length)*100)
+	on_note.emit((%AnimationPlayer.current_animation_position / %AnimationPlayer.current_animation_length) * 100)
 	(INSTRUMENTS[instrument_name] as Instrument).play_note(note)
 
 func stop_note(instrument_name: String, note):
-	emit_signal("on_note", (player.current_animation_position/player.current_animation_length)*100)
+	on_note.emit((%AnimationPlayer.current_animation_position / %AnimationPlayer.current_animation_length) * 100)
 	(INSTRUMENTS[instrument_name] as Instrument).stop_note(note)
 
 func play():
 	playing = true
-	if paused: 
+	if paused:
 		paused = false
-		player.play()
+		%AnimationPlayer.play()
 		return
-	player.stop()
-	player.play("song")
+	%AnimationPlayer.stop()
+	%AnimationPlayer.play("song")
 
 func stop():
 	playing = false
-	player.stop()
+	%AnimationPlayer.stop()
 
 func pause():
 	paused = true
-	player.stop(false)
+	%AnimationPlayer.stop(false)
 
 func seek(sec: float):
-	player.seek(sec, true)
+	%AnimationPlayer.seek(sec, true)
 	pass
 
 func finished(_anim):
-	emit_signal("playback_finished")
-	pass
+	playback_finished.emit()

@@ -26,6 +26,8 @@ GoDAW="*res://addons/godaw_toolkit/API/GoDAW.gd"
 
 gdscript/warnings/unused_signal=0
 gdscript/warnings/shadowed_variable=0
+gdscript/warnings/shadowed_variable_base_class=0
+gdscript/warnings/shadowed_global_identifier=0
 
 [display]
 
@@ -51,4 +53,5 @@ scroll_down={
 
 [rendering]
 
-environment/default_clear_color=Color(0.0941176, 0.0941176, 0.121569, 1)
+environment/defaults/default_clear_color=Color(0.17567894, 0.30064198, 0.49748018, 1)
+environment/default_clear_color=Color(0, 0, 0, 1)

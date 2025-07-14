@@ -1,25 +1,25 @@
 class_name Wave extends Node2D
 
-var data : PackedByteArray = PackedByteArray([]):
+var data: PackedByteArray = PackedByteArray([]):
 	set(val): set_data(val)
-var zero : Color = Color.BLACK:
+var zero: Color = Color.BLACK:
 	set(val): set_zero(val)
-var wave_color : Color = Color.GREEN_YELLOW:
+var wave_color: Color = Color.GREEN_YELLOW:
 	set(val): set_wave(val)
 
-func _init(audio : AudioStream):
+func _init(audio: AudioStream):
 	data = audio.data
 	queue_redraw()
 
-func set_data(value : PackedByteArray):
+func set_data(value: PackedByteArray):
 	data = value
 	queue_redraw()
 
-func set_zero(value : Color):
+func set_zero(value: Color):
 	zero = value
 	queue_redraw()
 
-func set_wave(value : Color):
+func set_wave(value: Color):
 	wave_color = value
 	queue_redraw()
 

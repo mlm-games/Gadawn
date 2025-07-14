@@ -2,9 +2,6 @@ extends Control
 
 signal instrument_chosen(instrument)
 
-@onready var title: Label = $Title/Label
-@onready var instrument_container = $Panel/Instruments/VBoxContainer
-
 func reload_instruments():
 	var dir = DirAccess.open("res://Instruments")
 
@@ -18,11 +15,12 @@ func reload_instruments():
 			icon = load("res://Themes/Default/Images/default_icon.png")
 
 		btn.icon = icon
+		@warning_ignore("incompatible_ternary")
 		btn.text = instrument if instrument.length() <= 20 else instrument.substr(0, 17) + "..."
 		btn.flat = false
 		btn.focus_mode = Control.FOCUS_NONE
 		btn.pressed.connect(_on_Instrument_pressed.bind(btn))
-		instrument_container.add_child(btn)
+		%InstrumentsContainer.add_child(btn)
 
 func _on_Instrument_pressed(button) -> void:
-	emit_signal("instrument_chosen", button)
+	instrument_chosen.emit(button)
