@@ -25,9 +25,6 @@ GoDAW="*res://addons/godaw_toolkit/API/GoDAW.gd"
 [debug]
 
 gdscript/warnings/unused_signal=0
-gdscript/warnings/shadowed_variable=0
-gdscript/warnings/shadowed_variable_base_class=0
-gdscript/warnings/shadowed_global_identifier=0
 
 [display]
 

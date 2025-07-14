@@ -8,12 +8,16 @@ var player: AudioStreamPlayer
 
 func _init(instrument_name: String):
 	super(instrument_name)
-	player = AudioStreamPlayer.new()
-	player.bus = AudioServer.get_bus_name(bus_idx)
-	player.stream = create_sample(440.00)
 
 func _ready():
-	add_child(player)
+	# Use the existing player from the scene if available
+	if has_node("AudioStreamPlayer"):
+		player = $AudioStreamPlayer
+	else:
+		player = get_new_player()
+	
+	player.bus = AudioServer.get_bus_name(bus_idx)
+	player.stream = create_sample(440.00)
 
 func play_note(note):
 	player.pitch_scale = (to_hertz(note.instrument_data.key) / 440.00)

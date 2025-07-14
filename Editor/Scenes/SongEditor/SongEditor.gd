@@ -8,12 +8,11 @@ signal done_error_handling()
 signal done_error_check(error)
 signal song_script_error(error)
 signal track_pressed(name)
+signal sequence_complete()
 
 @onready var SCRIPT_LOCATION = OS.get_user_data_dir() + "/song.gd"
-@onready var BIN = OS.get_executable_path()
 @onready var sequencer: Sequencer = %Sequencer
 @onready var song_script_editor: CodeEdit = %SongScriptEditor
-
 
 var ERROR_REGEX = RegEx.new()
 const SONG_PATH = "user://song.gd"
@@ -37,6 +36,7 @@ var in_file = ""
 func _ready():
 	ERROR_REGEX.compile("SCRIPT ERROR: (.*?)\\n(?:.*?):([0-9]+)")
 	done_error_check.connect(_after_error_check)
+	done_error_handling.connect(_on_sequence_complete)
 
 func add_track(instrument: Button):
 	if !gui: return
@@ -100,14 +100,19 @@ func _after_error_check(error):
 	%Sequencer.sequence(song.sequence)
 	done_error_handling.emit()
 
+func _on_sequence_complete():
+	sequence_complete.emit()
+
 func sequence():
 	if !gui:
 		start_loading.emit()
 		if in_file != %SongScriptEditor.text:
 			in_file = %SongScriptEditor.text
 			check_error()
+			await sequence_complete
 		else:
 			done_error_handling.emit()
+			await sequence_complete
 
 func _on_play():
 	await sequence()
@@ -128,8 +133,8 @@ func project_changed(project: Project):
 	%TracksScroll.visible = gui
 	
 	# Clear existing tracks
-	for name in %Names.get_children():
-		name.queue_free()
+	for n in %Names.get_children():
+		n.queue_free()
 	
 	if project.song_script:
 		%SongScriptEditor.text = project.song_script

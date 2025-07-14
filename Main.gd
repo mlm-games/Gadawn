@@ -6,6 +6,7 @@
 extends MarginContainer
 
 var project: Project
+var export_recorder: AudioEffectRecord
 
 signal project_changed(project)
 
@@ -36,28 +37,31 @@ func _on_top_menu_export_pressed():
 	
 	await %SongEditor.sequence()
 	
-	var recorder = AudioEffectRecord.new()
-	AudioServer.add_bus_effect(0, recorder, AudioServer.get_bus_effect_count(0))
+	export_recorder = AudioEffectRecord.new()
+	var recorder_index = AudioServer.get_bus_effect_count(0)
+	AudioServer.add_bus_effect(0, export_recorder, recorder_index)
 	
 	var progress = %DialogManager.progress("Exporting...")
 	progress.max_value = 100
 	var _conn = %SongEditor.sequencer.on_note.connect(progress.set_value)
 	
-	recorder.set_recording_active(true)
+	export_recorder.set_recording_active(true)
 	%SongEditor.sequencer.play()
 	await %SongEditor.sequencer.playback_finished
-	recorder.set_recording_active(false)
+	export_recorder.set_recording_active(false)
 	
 	%SongEditor.sequencer.on_note.disconnect(progress.set_value)
 
 	# Save recording
-	var recording = recorder.get_recording()
+	var recording = export_recorder.get_recording()
 	if recording:
 		recording.save_to_wav(file_path)
 	else:
 		%DialogManager.error("Failed to record audio")
 	
-	AudioServer.remove_bus_effect(0, AudioServer.get_bus_effect_count(0) - 1)
+	# Remove the specific recorder we added
+	AudioServer.remove_bus_effect(0, recorder_index)
+	export_recorder = null
 	%DialogManager.hide_progress()
 
 func _save(file_path):

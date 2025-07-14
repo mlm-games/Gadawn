@@ -18,20 +18,27 @@ func track(instrument: String, notes: Array):
 func pattern(notes: Array, repeat: int = 1, start_delta: float = 0.0) -> Array:
 	if notes.is_empty(): return []
 	var expanded = []
+	
 	for _i in repeat:
+		var pattern_start_time = 0.0
 		for el in notes:
 			if el is Note:
-				expanded.append(el)
+				# Create a copy of the note with adjusted timing
+				var new_note = Note.new()
+				new_note.note_start_delta = el.note_start_delta + start_delta
+				new_note.duration = el.duration
+				new_note.instrument_data = el.instrument_data
+				expanded.append(new_note)
+				pattern_start_time += el.note_start_delta + el.duration
 			elif el is Array:
-				expanded.append_array(pattern(el))
+				# Recursively process nested patterns with proper offset
+				var nested = pattern(el, 1, start_delta + pattern_start_time)
+				expanded.append_array(nested)
+				# Calculate the total duration of the nested pattern
+				for n in nested:
+					if n is Note:
+						pattern_start_time += n.note_start_delta + n.duration
 
-	# TODO: Move note copy code elsewhere
-	var new_first = Note.new()
-	new_first.note_start_delta = (expanded[0] as Note).note_start_delta + start_delta
-	new_first.duration = (expanded[0] as Note).duration
-	new_first.instrument_data = (expanded[0] as Note).instrument_data
-
-	expanded[0] = new_first
 	return expanded
 
 func note(note_start_delta: float, duration: float, data) -> Note:
