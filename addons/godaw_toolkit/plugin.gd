@@ -1,4 +1,4 @@
-tool
+@tool
 extends EditorPlugin
 
 const ADDON_PATH = "res://addons/godaw_toolkit"
