@@ -8,22 +8,18 @@ func _init():
 	super("TripleOsc", 22050)
 
 func waveform(_t: float):
-	# Example function: Adds amplitudes of multiple waveforms
-
 	# Add amplitudes
-	var amp = 0
+	var amp = 0.0
 	for key in currently_playing:
 		var freq = to_hertz(currently_playing[key].key)
-		for a in [
-			Waveforms.sine(t, freq, 0),
-			0.5 * Waveforms.sine(t, 2 * freq, 0),
-			0.25 * Waveforms.sine(t, 3 * freq, 0),
-		]:
-			amp += a
+		# Triple oscillator with harmonics
+		amp += Waveforms.sine(t, freq, 0) * 0.5
+		amp += Waveforms.sine(t, 2 * freq, 0) * 0.25
+		amp += Waveforms.sine(t, 3 * freq, 0) * 0.125
 
 	# Return normalized wave
 	if currently_playing.size() == 0:
-		return 0
+		return 0.0
 	return amp / currently_playing.size()
 
 # TODO: Move this to MIDI later
@@ -32,7 +28,6 @@ func to_hertz(key_no):
 
 func play_note(note: Note):
 	currently_playing[note.instrument_data.key] = note.instrument_data
-	currently_playing[note.instrument_data.key].end_t = note.duration
 	super.play_note(note)
 
 func stop_note(note: Note):

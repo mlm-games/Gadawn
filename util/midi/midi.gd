@@ -2,7 +2,7 @@ class_name MIDI extends Resource
 
 # MIDI classes
 class MidiEvent:
-	enum { NoteOff, NoteOn, Other }
+	enum {NoteOff, NoteOn, Other}
 	var type; var key; var velocity; var delta_tick
 	func _init(t, k = 0, v = 0, d = 0):
 		type = t
@@ -17,13 +17,12 @@ class MidiNote:
 		velocity = v
 		start_time = s
 		duration = d
-	pass
 
 class MidiTrack:
 	var name; var instrument; var events; var notes
 	var max_note; var min_note
 	func _init(na = "", i = "", e = [],
-		no = [], mi=64, ma = 64):
+		no = [], mi = 64, ma = 64):
 			name = na
 			instrument = i
 			events = e
@@ -32,9 +31,7 @@ class MidiTrack:
 			min_note = mi
 
 # Enums
-
-# MIDI Event Names
-enum EventName  {
+enum EventName {
 	VoiceNoteOff = 0x80,
 	VoiceNoteOn = 0x90,
 	VoiceAftertouch = 0xA0,
@@ -43,10 +40,9 @@ enum EventName  {
 	VoiceChannelPressure = 0xD0,
 	VoicePitchBend = 0xE0,
 	SystemExclusive = 0xF0,
-	}
+}
 
-#Meta Event Names
-enum MetaEventName  {
+enum MetaEventName {
 	MetaSequence = 0x00,
 	MetaText = 0x01,
 	MetaCopyright = 0x02,
@@ -62,9 +58,8 @@ enum MetaEventName  {
 	MetaTimesSignature = 0x58,
 	MetaKeySignature = 0x59,
 	MetaSequencerSpecific = 0x7F,
-	}
+}
 
-# SystemExclusiveStatus
 enum SystemExclusiveStatus {
 	StatusBegin = 0xF0,
 	StatusEnd = 0xF7,
@@ -77,19 +72,15 @@ var tracks = []
 @export var bpm = 120
 @export var ppq = 0.0
 
-
 # function to parse files to midi
 func parse_file(filename: String = "") -> bool:
 	# Open file, if any errors return false
-	var input_file = File.new()
-	var err = input_file.open(filename, File.READ)
-	if err:
-		push_error("Error Opening File: " + str(err))
+	var input_file = FileAccess.open(filename, FileAccess.READ)
+	if not input_file:
+		push_error("Error Opening File")
 		return false
 
-	input_file.set_endian_swap(true)
-
-	# Parse MIDI File
+	input_file.big_endian = true
 
 	# Read the header of MIDI File
 	var _file_id = input_file.get_32()
@@ -99,19 +90,19 @@ func parse_file(filename: String = "") -> bool:
 	ppq = float(input_file.get_16())
 	print("PPQ: ", ppq)
 	print("Tracks: ", track_chunks)
+	
 	# Read data from the MIDI File
 	for chunk in range(track_chunks):
-		#print("++New Track++")
 		# Read Track Header
 		var _track_id = input_file.get_32()
-		var _track_lenght = input_file.get_32()
+		var _track_length = input_file.get_32()
 
 		var end_of_track = false
 		var previous_status = 0
 
 		tracks.append(MidiTrack.new())
 
-		while !input_file.eof_reached() && !end_of_track:
+		while input_file.get_position() < input_file.get_length() and not end_of_track:
 			# All MIDI Events contain a timecode and a status byte
 			var status_time_delta = 0
 			var status = 0
@@ -122,7 +113,7 @@ func parse_file(filename: String = "") -> bool:
 
 			if status < 0x80:
 				status = previous_status
-				input_file.seek(input_file.get_position()-1)
+				input_file.seek(input_file.get_position() - 1)
 
 			# Match on the event.
 			match (status & 0xF0):
@@ -172,7 +163,6 @@ func parse_file(filename: String = "") -> bool:
 					previous_status = 0
 					match status:
 						SystemExclusiveStatus.StatusBegin:
-							#System Exclusive Message Begin
 							print("System Exclusive Begin: " + read_string(input_file,
 								read_value(input_file)))
 						SystemExclusiveStatus.StatusEnd:
@@ -208,9 +198,10 @@ func parse_file(filename: String = "") -> bool:
 								MetaEventName.MetaSetTempo:
 									# Tempo is in microseconds per quarter note
 									if tempo == 0:
-										(tempo |= (input_file.get_8() << 16))
-										(tempo |= (input_file.get_8() << 8))
-										(tempo |= (input_file.get_8() << 0))
+										tempo |= (input_file.get_8() << 16)
+										tempo |= (input_file.get_8() << 8)
+										tempo |= (input_file.get_8() << 0)
+										@warning_ignore("integer_division")
 										bpm = (60000000 / tempo)
 										print("Tempo: ", tempo, " (bpm:", bpm, ")")
 								MetaEventName.MetaSMPTEOffset:
@@ -220,8 +211,6 @@ func parse_file(filename: String = "") -> bool:
 								MetaEventName.MetaTimesSignature:
 									print("Time Signature: ", input_file.get_8(), "/", input_file.get_8())
 									print("ClocksPerTick: ", input_file.get_8())
-
-									# Midi "Beats" are 24 ticks, sepcify how many 32nd notes constitute a beat
 									print("32per24clocks: ", input_file.get_8())
 								MetaEventName.MetaKeySignature:
 									print("Key Signature: ", input_file.get_8())
@@ -233,45 +222,44 @@ func parse_file(filename: String = "") -> bool:
 						_:
 							print("Unrecognized Status Byte")
 
+	input_file.close()
+
+	# Process notes
 	for track in tracks:
 		var wall_time = 0
-		var last_note_on = 0
-
 		var notes_being_processed := {}
 
 		for event in track.events:
 			wall_time += event.delta_tick
 			if event.type == MidiEvent.NoteOn:
-				notes_being_processed[event.key] = MidiNote.new(event.key, event.velocity, wall_time - last_note_on, wall_time)
-				last_note_on = wall_time
+				notes_being_processed[event.key] = MidiNote.new(event.key, event.velocity, wall_time, wall_time)
 			elif event.type == MidiEvent.NoteOff:
 				if notes_being_processed.has(event.key):
 					var note = notes_being_processed[event.key]
 					track.notes.append(MidiNote.new(note.key, note.velocity, note.start_time,
-					wall_time-note.duration))
-					track.min_note = note.key * int(note.key < track.min_note)
-					track.max_note = note.key * int(note.key > track.max_note)
-					notes_being_processed.erase(note.key)
+					wall_time - note.start_time))
+					if track.min_note == 64 or note.key < track.min_note:
+						track.min_note = note.key
+					if track.max_note == 64 or note.key > track.max_note:
+						track.max_note = note.key
+					notes_being_processed.erase(event.key)
 	return true
 
-# Read values from the midi file. Midi has data in on 7 bits
-# in a byte. The first bit indicates weather or not to read the rest.
-
 # Read n length bytes from file, and constructs a string.
-func read_string(file: File, n) -> String:
+func read_string(file: FileAccess, n) -> String:
 	var s := PackedByteArray()
-	for _i in range(n): s.append(file.get_8())
+	for _i in range(n):
+		s.append(file.get_8())
 	return s.get_string_from_ascii()
 
-
-func read_value(file: File):
+func read_value(file: FileAccess):
 	var val = 0
 	var byte = 0
 
 	# Read a byte
 	val = file.get_8()
 
-	#Check MSB, if set, read more bytes
+	# Check MSB, if set, read more bytes
 	if val & 0x80:
 		# Extract bottom 7 bits
 		val &= 0x7f
@@ -299,9 +287,9 @@ func play(start_time = 0):
 		for idx in track.notes.size():
 			var note = track.notes[idx] as MidiNote
 			var new_note = Note.new()
-			if note.duration == 0: continue
-			print(note.velocity)
-			new_note.instrument_data = { "key": note.key, "velocity": note.velocity }
+			if note.duration == 0:
+				continue
+			new_note.instrument_data = {"key": note.key, "velocity": note.velocity}
 			new_note.note_start_delta = note.start_time * seconds_per_tick
 			new_note.duration = note.duration * seconds_per_tick
 			new_track.add_note(new_note)
