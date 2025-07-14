@@ -1,13 +1,9 @@
-[gd_scene format=2]
+[gd_scene format=3 uid="uid://pkt7eyynei58"]
 
-[node name="TrackEditor" type="WindowDialog"]
-margin_right = 48.0
-margin_bottom = 40.0
-rect_min_size = Vector2( 876, 480 )
-window_title = "Track Editor"
+[node name="TrackEditor" type="Window"]
+oversampling_override = 1.0
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-
-[connection signal="popup_hide" from="." to="." method="_unpopup"]

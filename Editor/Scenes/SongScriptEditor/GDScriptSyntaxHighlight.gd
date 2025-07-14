@@ -1,24 +1,30 @@
 extends Node
 
-@onready var script_editor = get_parent()
-
-func keyword(keyword: String):
-	script_editor.add_keyword_color(keyword, Color("e8a2af"))
-
-func region(start: String, end: String, color: Color, line_only: bool = false):
-	script_editor.add_color_region(start, end, color, line_only)
-
-func type(type_name: String):
-	script_editor.add_keyword_color(type_name, Color("fae3b0"))
+@onready var script_editor : TextEdit = get_parent()
 
 func _ready():
-	keyword("extends")
-	keyword("func")
-	keyword("@onready")
-	keyword("var")
-	keyword("const")
-	keyword("pass")
-	type("SongScript")
-	region('"', '"', Color("abe9b3"))
-	region("'", "'", Color("abe9b3"))
-	region("#", "\n", Color("6e6c7e"), true)
+	var highlighter = CodeHighlighter.new()
+	
+	highlighter.number_color = Color("f9c74f")
+	highlighter.symbol_color = Color("f8961e")
+	highlighter.function_color = Color("90be6d")
+	highlighter.member_variable_color = Color("43aa8b")
+	
+	var keywords = {
+		"extends": Color("e8a2af"),
+		"func": Color("e8a2af"),
+		"@onready": Color("e8a2af"),
+		"var": Color("e8a2af"),
+		"const": Color("e8a2af"),
+		"pass": Color("e8a2af"),
+		"SongScript": Color("fae3b0")
+	}
+	
+	for keyword in keywords:
+		highlighter.add_keyword_color(keyword, keywords[keyword])
+	
+	highlighter.add_color_region('"', '"', Color("abe9b3"))
+	highlighter.add_color_region("'", "'", Color("abe9b3"))
+	highlighter.add_color_region("#", "", Color("6e6c7e"), true)
+	
+	script_editor.syntax_highlighter = highlighter

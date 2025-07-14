@@ -27,7 +27,7 @@ var gui: bool = true
 var track_name = preload("./TrackName.tscn")
 var error_text = ""
 var in_file = ""
-var song_file: File
+var song_file: FileAccess
 
 @onready var thread = Thread.new()
 @onready var names = $TracksScroll/HBox/Names
@@ -38,17 +38,16 @@ var song_file: File
 
 func _ready():
 	ERROR_REGEX.compile("SCRIPT ERROR: (.*?)\\n(?:.*?):([0-9]+)")
-	song_file = File.new()
-	connect("done_error_check", self, "_after_error_check")
+	done_error_check.connect(_after_error_check)
 
 # Takes a Button since it conveniently sends an icon and message
 # TODO: Not use button as param
 func add_track(instrument: Button):
 	if !gui: return
-	var name = track_name.instance()
+	var name : Button = track_name.instantiate()
 	name.set_instrument(instrument.icon, instrument.text)
 	names.add_child(name)
-	name.connect("pressed", self, "emit_signal", ["track_pressed", instrument.text])
+	name.pressed.connect(track_pressed.emit.bind(instrument.text))
 	
 	# TODO: Hacky code
 	var inst := GoDAW.get_instrument(instrument.text)
@@ -57,7 +56,7 @@ func add_track(instrument: Button):
 func check_error():
 	# Error check
 	var err = []
-	var _n = OS.execute(BIN, ["-s", SCRIPT_LOCATION, "--check-only", "--no-window"], true, err, true)
+	#var _n = OS.execute(BIN, ["-s", SCRIPT_LOCATION, "--check-only", "--no-window"], true, err, true)
 	var error = ""
 	var regex_result = ERROR_REGEX.search(err[0])
 	if regex_result:
@@ -95,11 +94,11 @@ func sequence():
 	if !gui:
 		emit_signal("start_loading")
 		if in_file != song_script_editor.text:
-			song_file.open(SONG_PATH, File.WRITE_READ)
+			song_file.open(SONG_PATH, FileAccess.WRITE_READ)
 			song_file.store_string(song_script_editor.text)
 			song_file.close()
 			in_file = song_script_editor.text
-			thread.start(self, "check_error")
+			thread.start(check_error)
 
 func _on_play():
 	sequence()

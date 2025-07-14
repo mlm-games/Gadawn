@@ -4,8 +4,8 @@ const OCTAVE_FACTOR = pow(2, 1.0/12)
 
 var currently_playing := {}
 
-func _init().("TripleOsc", 22050):
-	pass
+func _init():
+	super("TripleOsc", 22050)
 
 func waveform(t: float):
 	# Example function: Adds amplitudes of multiple waveforms
@@ -33,9 +33,9 @@ func to_hertz(key_no):
 func play_note(note: Note):
 	self.currently_playing[note.instrument_data.key] = note.instrument_data
 	self.currently_playing[note.instrument_data.key].end_t = note.duration
-	.play_note(note)
+	super.play_note(note)
 
 func stop_note(note: Note):
 	self.currently_playing.erase(note.instrument_data.key)
 	if self.currently_playing.size() == 0:
-		.stop_note(note)
+		super.stop_note(note)

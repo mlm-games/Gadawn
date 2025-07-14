@@ -1,5 +1,4 @@
 extends Instrument
-
 class_name LiveSynthesisInstrument
 
 var player: AudioStreamPlayer
@@ -8,9 +7,9 @@ var mix_rate: float
 
 var t := 0.0
 
-func _init(instrument_name: String, mix_rate: float = 44100.0):
-	(instrument_name)
-	self.mix_rate = mix_rate
+func _init(p_instrument_name: String = "", p_mix_rate: float = 44100.0):
+	super(p_instrument_name)
+	self.mix_rate = p_mix_rate
 
 func _ready():
 	self.player = self.get_new_player()
@@ -19,7 +18,7 @@ func _ready():
 	stream.mix_rate = self.mix_rate
 	self.player.stream = stream
 
-func _process(delta):
+func _process(_delta):
 	if player.playing:
 		_fill_buffer()
 
@@ -32,7 +31,7 @@ func _fill_buffer():
 
 	self.playback.push_buffer(buffer)
 
-func waveform(t: float) -> float:
+func waveform(_t: float) -> float:
 	return 0.0
 
 func play_note(_note: Note):

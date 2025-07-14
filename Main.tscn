@@ -6,7 +6,7 @@
 [ext_resource type="Script" uid="uid://6pxioyca0vtd" path="res://Main.gd" id="4"]
 [ext_resource type="PackedScene" path="res://Editor/Scenes/Instruments/InstrumentsPanel.tscn" id="5"]
 [ext_resource type="PackedScene" path="res://Editor/Scenes/TopMenu/TopMenu.tscn" id="6"]
-[ext_resource type="PackedScene" path="res://Editor/Scenes/Dialogues/TrackEditor/TrackEditor.tscn" id="7"]
+[ext_resource type="PackedScene" uid="uid://pkt7eyynei58" path="res://Editor/Scenes/Dialogues/TrackEditor/TrackEditor.tscn" id="7"]
 [ext_resource type="Script" uid="uid://bryrm2ttfmhmv" path="res://Editor/Scenes/Dialogues/DialogManager.gd" id="8"]
 [ext_resource type="PackedScene" path="res://Editor/Scenes/Dialogues/NewSong/NewSong.tscn" id="9"]
 
@@ -39,34 +39,14 @@ size_flags_horizontal = 0
 [node name="SongEditor" parent="Application/Main" instance=ExtResource("3")]
 layout_mode = 2
 size_flags_vertical = 3
-margin_top = 34.0
-margin_right = 1014.0
-margin_bottom = 659.0
 
 [node name="DialogManager" type="Control" parent="."]
 layout_mode = 2
 script = ExtResource("8")
 
-[node name="ProgressDialog" type="PopupDialog" parent="DialogManager"]
-_import_path = NodePath("")
-unique_name_in_owner = false
-process_mode = 0
-process_priority = 0
-process_physics_priority = 0
-process_thread_group = 0
-physics_interpolation_mode = 0
-auto_translate_mode = 0
-editor_description = ""
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -280.5
-margin_top = -40.5
-margin_right = 280.5
-margin_bottom = 40.5
-popup_exclusive = true
-script = null
+[node name="ProgressDialog" type="Popup" parent="DialogManager"]
+oversampling_override = 1.0
+position = Vector2i(0, 36)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="DialogManager/ProgressDialog"]
 anchors_preset = 15
@@ -82,26 +62,9 @@ horizontal_alignment = 1
 [node name="ProgressBar" type="ProgressBar" parent="DialogManager/ProgressDialog/VBoxContainer"]
 layout_mode = 2
 
-[node name="Loading" type="PopupDialog" parent="DialogManager"]
-_import_path = NodePath("")
-unique_name_in_owner = false
-process_mode = 0
-process_priority = 0
-process_physics_priority = 0
-process_thread_group = 0
-physics_interpolation_mode = 0
-auto_translate_mode = 0
-editor_description = ""
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-margin_left = -280.5
-margin_top = -40.5
-margin_right = 280.5
-margin_bottom = 40.5
-popup_exclusive = true
-script = null
+[node name="Loading" type="Popup" parent="DialogManager"]
+oversampling_override = 1.0
+position = Vector2i(0, 36)
 
 [node name="VBoxContainer" type="VBoxContainer" parent="DialogManager/Loading"]
 anchors_preset = 15
@@ -119,33 +82,14 @@ access = 2
 filters = PackedStringArray("*.wav ; Wav Files")
 
 [node name="TrackEditor" parent="DialogManager" instance=ExtResource("7")]
-_import_path = NodePath("")
-unique_name_in_owner = false
-process_mode = 0
-process_priority = 0
-process_physics_priority = 0
-process_thread_group = 0
 physics_interpolation_mode = 0
-auto_translate_mode = 0
-editor_description = ""
-script = null
+position = Vector2i(0, 36)
 
 [node name="NewSong" parent="DialogManager" instance=ExtResource("9")]
 
-[node name="ErrorDialog" type="WindowDialog" parent="DialogManager"]
-_import_path = NodePath("")
-unique_name_in_owner = false
-process_mode = 0
-process_priority = 0
-process_physics_priority = 0
-process_thread_group = 0
-physics_interpolation_mode = 0
-auto_translate_mode = 0
-editor_description = ""
-margin_right = 480.0
-margin_bottom = 140.0
-window_title = "Error"
-script = null
+[node name="ErrorDialog" type="Window" parent="DialogManager"]
+oversampling_override = 1.0
+position = Vector2i(0, 36)
 
 [node name="ScrollContainer" type="ScrollContainer" parent="DialogManager/ErrorDialog"]
 anchors_preset = 15

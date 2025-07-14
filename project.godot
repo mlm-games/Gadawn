@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="GoDAW"
+config/name="Godawn"
 run/main_scene="res://Main.tscn"
 config/features=PackedStringArray("4.5")
 run/low_processor_mode=true
@@ -21,6 +21,11 @@ config/icon="res://Docs/Icon.svg"
 [autoload]
 
 GoDAW="*res://addons/godaw_toolkit/API/GoDAW.gd"
+
+[debug]
+
+gdscript/warnings/unused_signal=0
+gdscript/warnings/shadowed_variable=0
 
 [display]
 

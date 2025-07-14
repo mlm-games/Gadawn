@@ -6,7 +6,8 @@ const OCTAVE_FACTOR = pow(2, 1.0/12)
 
 var player: AudioStreamPlayer
 
-func _init(instrument_name: String).(instrument_name):
+func _init(instrument_name: String):
+	super(instrument_name)
 	player = AudioStreamPlayer.new()
 	player.bus = AudioServer.get_bus_name(bus_idx)
 	player.stream = create_sample(440.00)

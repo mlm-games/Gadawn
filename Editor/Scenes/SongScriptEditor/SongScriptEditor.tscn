@@ -1,17 +1,12 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://cg6lcq4f2mrgq"]
 
-[ext_resource path="res://Editor/Scenes/SongScriptEditor/GDScriptSyntaxHighlight.gd" type="Script" id=1]
+[ext_resource type="Script" uid="uid://dtoype8h4j30n" path="res://Editor/Scenes/SongScriptEditor/GDScriptSyntaxHighlight.gd" id="1"]
 
 [node name="SongScriptEditor" type="TextEdit"]
-margin_right = 876.0
-margin_bottom = 480.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-syntax_highlighting = true
-show_line_numbers = true
-draw_tabs = true
-bookmark_gutter = true
 caret_blink = true
+draw_tabs = true
 
 [node name="GDScriptSyntaxHighlight" type="Node" parent="."]
-script = ExtResource( 1 )
+script = ExtResource("1")

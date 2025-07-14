@@ -1,4 +1,4 @@
-extends ToolButton
+extends Button
 
 @onready var delete_confirm: ConfirmationDialog = $DeleteConfirm
 

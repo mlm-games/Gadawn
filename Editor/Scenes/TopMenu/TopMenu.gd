@@ -4,16 +4,21 @@ signal new_pressed()
 signal open_pressed()
 signal save_pressed()
 signal save_as_pressed()
-signal @export_pressed()
+signal export_pressed()
 signal quit_pressed()
 
-@onready var menus = {
+@onready var menus : Dictionary[StringName, Dictionary] = {
 	"Song": {
 		"node": $SongMenu,
-		"elements": { "New": "new_pressed", "Open": "open_pressed",
-			 "Save": "save_pressed", "Save as...": "",
-			 "@export": "@export_pressed" ,"Separator": "",
-			 "Quit": "quit_pressed" }
+		"elements": { 
+			"New": "new_pressed", 
+			"Open": "open_pressed",
+			"Save": "save_pressed", 
+			"Save as...": "save_as_pressed",
+			"Export": "export_pressed",
+			"Separator": "",
+			"Quit": "quit_pressed" 
+		}
 	},
 	"Edit": {
 		"node": $EditMenu,
@@ -34,17 +39,21 @@ func _ready():
 		var m = menus[menu]
 		var node = m.node
 		init_menu(node, m.elements)
-		node.get_popup().connect("id_pressed", self, "on_item_pressed", [menu])
+		node.get_popup().id_pressed.connect(_on_item_pressed.bind(menu))
 
 func project_changed(project):
 	$ProjectName.text = project.project_name
 
-func on_item_pressed(id, menu):
+func _on_item_pressed(id: int, menu: String):
 	var menu_dict = menus[menu]
 	var node = menu_dict.node
 	var item_name = node.get_popup().get_item_text(id)
-	var s = menu_dict["elements"][item_name]
-	emit_signal(s)
+	var signal_name = menu_dict["elements"][item_name]
+	
+	# Using get() to access signals dynamically
+	if signal_name != "" and has_signal(signal_name):
+		get(signal_name).emit()
+
 
 func init_menu(menu, items):
 	for e in items:
