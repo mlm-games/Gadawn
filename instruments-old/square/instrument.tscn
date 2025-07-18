@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://g15s0sr6gc2i"]
-
-[ext_resource type="Script" uid="uid://oxcxt8358arr" path="res://instruments-old/square/instrument.gd" id="1"]
-
-[node name="Square" type="Node"]
-script = ExtResource("1")

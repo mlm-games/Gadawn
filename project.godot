@@ -20,7 +20,6 @@ config/icon="res://docs/icon.svg"
 
 [autoload]
 
-GoDawn="*res://addons/godaw_toolkit/api/go_dawn.gd"
 CurrentProject="*res://current_project.gd"
 
 [debug]
@@ -34,7 +33,7 @@ window/size/height=720
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godaw_toolkit/plugin.cfg")
+enabled=PackedStringArray()
 
 [gui]
 

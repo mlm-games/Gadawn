@@ -23,4 +23,4 @@ func _on_button_gui_input(event: InputEvent, scene_path: String):
 		var preview = Label.new()
 		preview.text = scene_path.get_file()
 		set_drag_preview(preview)
-		#FIXME: set_drag_data({"type": "instrument", "path": scene_path})
+		#FIXME: the method doesn't exist: set_drag_data({"type": "instrument", "path": scene_path})
