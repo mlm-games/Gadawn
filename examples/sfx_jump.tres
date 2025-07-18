@@ -1,0 +1,39 @@
+[gd_resource type="Project" script_class="Project" load_steps=10 format=3 uid="uid://cag12j7u0v1kx"]
+
+[ext_resource type="Script" uid="uid://c1ayspav3jqj1" path="res://data/project.gd" id="1_project"]
+[ext_resource type="Script" uid="uid://ddrnkhpywdxcb" path="res://data/track_data.gd" id="2_trackdata"]
+[ext_resource type="Script" uid="uid://bnt2ru5utjl6x" path="res://data/track_event.gd" id="3_kyef6"]
+[ext_resource type="PackedScene" uid="uid://g15s0sr6gc2i" path="res://instruments/square/instrument.tscn" id="3_square"]
+[ext_resource type="Script" uid="uid://dicfq6p2c0f2f" path="res://data/note_event.gd" id="4_note"]
+
+[sub_resource type="Resource" id="NoteEvent_sfx1"]
+script = ExtResource("4_note")
+duration_sec = 0.05
+key = 72
+
+[sub_resource type="Resource" id="NoteEvent_sfx2"]
+script = ExtResource("4_note")
+duration_sec = 0.05
+key = 76
+start_time_sec = 0.05
+
+[sub_resource type="Resource" id="NoteEvent_sfx3"]
+script = ExtResource("4_note")
+duration_sec = 0.05
+key = 79
+start_time_sec = 0.1
+
+[sub_resource type="Resource" id="TrackData_sfx"]
+script = ExtResource("2_trackdata")
+track_name = "Jump SFX"
+track_type = 1
+events = Array[ExtResource("3_kyef6")]([SubResource("NoteEvent_sfx1"), SubResource("NoteEvent_sfx2"), SubResource("NoteEvent_sfx3")])
+instrument_scene = ExtResource("3_square")
+
+[resource]
+resource_local_to_scene = false
+resource_name = ""
+script = ExtResource("1_project")
+tracks = Array[ExtResource("2_trackdata")]([SubResource("TrackData_sfx")])
+project_name = "Example Jump SFX"
+view_zoom = 250.0

@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://cg6lcq4f2mrgq"]
+[gd_scene load_steps=4 format=3 uid="uid://cg6lcq4f2mrgq"]
 
 [ext_resource type="Script" uid="uid://bbfja0h20bkyv" path="res://editor/timeline/timeline_ui.gd" id="1_timeline"]
 [ext_resource type="PackedScene" uid="uid://dgmbqblpnaqno" path="res://editor/timeline/track_header_ui.tscn" id="2_header"]
+[ext_resource type="PackedScene" uid="uid://b8nfm2slyjqej" path="res://editor/timeline/ruler_ui.tscn" id="3_fh13x"]
 
 [node name="TimelineUI" type="Control"]
 clip_contents = true
@@ -72,6 +73,12 @@ offset_right = 2.0
 grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 0.2, 0.2, 0.8)
+
+[node name="RulerUI" parent="." instance=ExtResource("3_fh13x")]
+unique_name_in_owner = true
+layout_mode = 0
+offset_right = 125.0
+offset_bottom = 30.0
 
 [connection signal="pressed" from="HSplitContainer/HeaderPanel/VBox/RulerHeader/AddTrackButton" to="." method="_on_add_track_button_pressed"]
 [connection signal="gui_input" from="HSplitContainer/TimelineScroll/TimelinePanel" to="." method="_on_timeline_panel_gui_input"]

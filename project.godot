@@ -16,7 +16,7 @@ config/features=PackedStringArray("4.5")
 run/low_processor_mode=true
 boot_splash/bg_color=Color(0.109804, 0.109804, 0.141176, 1)
 boot_splash/image="uid://b2uvtwbi0tie0"
-config/icon="res://docs/icon.svg"
+config/icon="uid://da4r4a6i5fi0s"
 
 [autoload]
 
