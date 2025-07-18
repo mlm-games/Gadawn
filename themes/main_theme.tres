@@ -1,0 +1,70 @@
+[gd_resource type="Theme" load_steps=11 format=3 uid="uid://cee0yehrjy3kp"]
+
+[sub_resource type="StyleBoxFlat" id="2"]
+bg_color = Color(0.2, 0.2, 0.23, 1)
+
+[sub_resource type="StyleBoxFlat" id="4"]
+bg_color = Color(0.25, 0.25, 0.29, 1)
+
+[sub_resource type="StyleBoxFlat" id="3"]
+bg_color = Color(0.12, 0.12, 0.15, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.4, 0.4, 0.44, 1)
+
+[sub_resource type="StyleBoxFlat" id="1"]
+bg_color = Color(0.1, 0.1, 0.12, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.3, 0.33, 1)
+
+[sub_resource type="StyleBoxFlat" id="5"]
+bg_color = Color(0.2, 0.2, 0.23, 1)
+
+[sub_resource type="StyleBoxFlat" id="7"]
+bg_color = Color(0.15, 0.15, 0.18, 1)
+
+[sub_resource type="StyleBoxFlat" id="8"]
+bg_color = Color(0.2, 0.2, 0.23, 1)
+
+[sub_resource type="StyleBoxFlat" id="10"]
+bg_color = Color(0.15, 0.15, 0.18, 1)
+
+[sub_resource type="StyleBoxFlat" id="11"]
+bg_color = Color(0.2, 0.2, 0.23, 1)
+
+[sub_resource type="StyleBoxFlat" id="9"]
+bg_color = Color(0.25, 0.25, 0.29, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.25, 0.45, 0.7, 1)
+
+[resource]
+default_font_size = 14
+Button/styles/disabled = SubResource("2")
+Button/styles/focus = SubResource("4")
+Button/styles/hover = SubResource("3")
+Button/styles/normal = SubResource("1")
+Button/styles/pressed = SubResource("5")
+HSplitContainer/constants/separation = 8
+HSplitContainer/icons/grabber = null
+Label/colors/font_color = Color(0.85, 0.85, 0.88, 1)
+LineEdit/styles/normal = SubResource("7")
+MenuButton/styles/hover = SubResource("3")
+MenuButton/styles/normal = SubResource("1")
+MenuButton/styles/pressed = SubResource("5")
+OptionButton/styles/hover = SubResource("3")
+OptionButton/styles/normal = SubResource("1")
+OptionButton/styles/pressed = SubResource("5")
+PanelContainer/styles/panel = SubResource("8")
+PopupPanel/styles/panel = SubResource("10")
+TabContainer/styles/panel = SubResource("11")
+TabContainer/styles/tab_selected = SubResource("9")
+VSplitContainer/constants/separation = 8
+VSplitContainer/icons/grabber = null

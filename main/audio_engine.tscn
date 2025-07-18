@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://bve7wimpparyi"]
+
+[ext_resource type="Script" uid="uid://w7qtakke42kr" path="res://main/audio_engine.gd" id="1_engine"]
+
+[node name="AudioEngine" type="Node"]
+script = ExtResource("1_engine")
+
+[node name="VoiceContainer" type="Node" parent="."]
+unique_name_in_owner = true

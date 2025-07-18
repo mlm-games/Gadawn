@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3 uid="uid://dg4ppy8ynqeux"]
+
+[ext_resource type="Script" uid="uid://csiucgglah1rb" path="res://main/main.gd" id="1_main"]
+[ext_resource type="PackedScene" uid="uid://bve7wimpparyi" path="res://main/audio_engine.tscn" id="2_engine"]
+[ext_resource type="PackedScene" uid="uid://d0640825wwiqj" path="res://editor/song_editor.tscn" id="3_editor"]
+[ext_resource type="PackedScene" uid="uid://buoe276tnprxb" path="res://editor/dialogs/dialog_manager.tscn" id="4_dialogs"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main")
+
+[node name="SongEditor" parent="." instance=ExtResource("3_editor")]
+unique_name_in_owner = true
+layout_mode = 1
+
+[node name="AudioEngine" parent="." instance=ExtResource("2_engine")]
+unique_name_in_owner = true
+
+[node name="DialogManager" parent="." instance=ExtResource("4_dialogs")]
+unique_name_in_owner = true
+layout_mode = 1

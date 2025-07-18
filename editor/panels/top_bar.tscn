@@ -1,0 +1,39 @@
+[gd_scene load_steps=2 format=3 uid="uid://co3426kj3k403"]
+
+[ext_resource type="Script" uid="uid://b553m64je3n2n" path="res://editor/panels/top_bar.gd" id="1_topbar"]
+
+[node name="TopBar" type="PanelContainer"]
+custom_minimum_size = Vector2(0, 32)
+script = ExtResource("1_topbar")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="FileMenu" type="MenuButton" parent="HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+focus_mode = 2
+text = "File"
+flat = false
+item_count = 5
+popup/item_0/text = "New Project"
+popup/item_0/id = 0
+popup/item_1/text = "Open Project..."
+popup/item_1/id = 1
+popup/item_2/text = "Save Project"
+popup/item_2/id = 2
+popup/item_3/text = "Separator"
+popup/item_3/id = 3
+popup/item_3/separator = true
+popup/item_4/text = "Export as .wav..."
+popup/item_4/id = 4
+
+[node name="ProjectNameLabel" type="Label" parent="HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Untitled Project"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[connection signal="about_to_popup" from="HBoxContainer/FileMenu" to="." method="_on_file_menu_about_to_popup"]
