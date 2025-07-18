@@ -5,8 +5,8 @@
 [node name="NewTrackDialog" type="ConfirmationDialog"]
 oversampling_override = 1.0
 title = "Add New Track"
+position = Vector2i(0, 36)
 size = Vector2i(400, 200)
-visible = true
 script = ExtResource("1_dialog")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]

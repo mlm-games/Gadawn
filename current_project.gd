@@ -24,6 +24,8 @@ func add_track(track_type: TrackData.TrackType, instrument_scene_path: String = 
 	
 	project.tracks.append(new_track)
 	project_changed.emit(project)
+	
+	
 
 func move_event(event: TrackEvent, new_time_sec: float, new_track_index: int):
 	# Find and remove the event from its old track

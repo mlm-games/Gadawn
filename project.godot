@@ -21,7 +21,7 @@ config/icon="res://docs/icon.svg"
 [autoload]
 
 GoDawn="*res://addons/godaw_toolkit/api/go_dawn.gd"
-CurrentProject="*res://scripts/current_project.gd"
+CurrentProject="*res://current_project.gd"
 
 [debug]
 
