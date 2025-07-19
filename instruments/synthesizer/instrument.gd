@@ -6,13 +6,13 @@ extends Instrument
 ## --- SYNTH SETTINGS (from gDAW) ---
 enum Waveform {SINE, TRIANGLE, SQUARE, SAW, WHITE_NOISE}
 @export_category("Oscillator")
-@export(Waveform) var waveform = Waveform.SINE
+@export var waveform := Waveform.SINE
 
 @export_category("ADSR Envelope")
-@export(float, 0.001, 5.0, 0.01) var attack_sec = 0.01
-@export(float, 0.001, 5.0, 0.01) var decay_sec = 0.1
-@export(float, 0.0, 1.0, 0.01) var sustain_level = 0.7
-@export(float, 0.001, 5.0, 0.01) var release_sec = 0.2
+@export var attack_sec: = 0.01
+@export var decay_sec := 0.1
+@export var sustain_level := 0.7
+@export var release_sec := 0.2
 
 var _voices: Dictionary = {} # Maps note key -> Voice instance
 

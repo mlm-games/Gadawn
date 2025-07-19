@@ -73,8 +73,8 @@ func _redraw_timeline():
 			lane.set_track_data(project, i)
 			
 			# Connect signals to forward events up to Main
-			lane.event_moved.connect(event_moved)
-			lane.event_created.connect(event_created)
+			lane.event_moved.connect(event_moved.emit)
+			lane.event_created.connect(event_created.emit)
 
 # --- Input Handling for Pan and Zoom ---
 

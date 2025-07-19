@@ -8,14 +8,20 @@ extends ConfirmationDialog
 var _instrument_paths: Array[String] = []
 
 func _ready():
-	track_type_option.add_item("Audio Track", TrackData.TrackType.AUDIO)
-	track_type_option.add_item("Instrument Track", TrackData.TrackType.INSTRUMENT)
+	track_type_option.clear()
+	track_type_option.add_item("Audio Track")
+	track_type_option.set_item_metadata(0, TrackData.TrackType.AUDIO)
+	track_type_option.add_item("Instrument Track")
+	track_type_option.set_item_metadata(1, TrackData.TrackType.INSTRUMENT)
 	track_type_option.item_selected.connect(_on_track_type_selected)
 	_scan_instruments()
 	_on_track_type_selected(0)
 
 func get_selected_type() -> TrackData.TrackType:
-	return track_type_option.get_selected_metadata()
+	var selected_index = track_type_option.selected
+	if selected_index >= 0:
+		return track_type_option.get_item_metadata(selected_index)
+	return TrackData.TrackType.AUDIO
 
 func get_selected_instrument() -> String:
 	if instrument_option.selected >= 0 and instrument_option.selected < _instrument_paths.size():
