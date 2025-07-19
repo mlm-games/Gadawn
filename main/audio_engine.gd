@@ -45,21 +45,19 @@ func load_project(project: Project) -> void:
 	
 	for child in _voice_container.get_children():
 		child.queue_free()
-
+	
 	if not _project: return
 		
 	for track_data in _project.tracks:
 		var track_id_str = str(track_data.get_instance_id())
 		match track_data.track_type:
 			TrackData.TrackType.AUDIO:
-				var player = AudioStreamPlayer.new()
-				player.name = track_id_str
-				# We create a simple wrapper for the player to conform to the instrument interface
-				var audio_instrument_wrapper = preload("res://instruments/audio_instrument_wrapper.gd").new()
-				audio_instrument_wrapper.player = player
-				_voice_container.add_child(audio_instrument_wrapper)
-				audio_instrument_wrapper.add_child(player)
-
+				# Create the wrapper instrument for audio tracks
+				var wrapper_script = preload("res://instruments/audio_instrument_wrapper.gd")
+				var audio_instrument = wrapper_script.new()
+				audio_instrument.name = track_id_str
+				_voice_container.add_child(audio_instrument)
+	
 			TrackData.TrackType.INSTRUMENT:
 				if track_data.instrument_scene:
 					var inst = track_data.instrument_scene.instantiate()

@@ -32,9 +32,11 @@ func init_voice(synth_instrument: SynthesizerInstrument, note_event: NoteEvent):
 	
 	self.volume_db = linear_to_db(_note.velocity / 127.0)
 	
-	_playback = get_stream_playback()
 	_set_state(State.ATTACK)
 	play()
+	
+	# Get playback after starting to play
+	_playback = get_stream_playback() as AudioStreamGeneratorPlayback
 
 func _set_state(new_state: State):
 	_state = new_state
@@ -69,6 +71,9 @@ func _update_state_machine():
 				queue_free()
 
 func _fill_buffer():
+	if not _playback:
+		return
+		
 	var frames_to_fill = _playback.get_frames_available()
 	for i in range(frames_to_fill):
 		_current_level = _get_envelope_level()
