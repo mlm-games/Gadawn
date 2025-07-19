@@ -18,8 +18,7 @@ extends Control
 
 func _ready() -> void:
 	# Load a default empty project on start.
-	var default_project = Project.new()
-	CurrentProject.set_project(default_project)
+	_on_new_project()
 
 	# Connect signals between major components.
 	_connect_signals()
