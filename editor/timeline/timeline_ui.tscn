@@ -74,10 +74,9 @@ grow_vertical = 2
 mouse_filter = 2
 color = Color(1, 0.2, 0.2, 0.8)
 
-[node name="RulerUI" parent="." instance=ExtResource("3_fh13x")]
+[node name="RulerUI" parent="HSplitContainer/TimelineScroll/TimelinePanel" instance=ExtResource("3_fh13x")]
 unique_name_in_owner = true
 layout_mode = 0
-offset_right = 125.0
 offset_bottom = 30.0
 
 [connection signal="pressed" from="HSplitContainer/HeaderPanel/VBox/RulerHeader/AddTrackButton" to="." method="_on_add_track_button_pressed"]
