@@ -1,6 +1,11 @@
 class_name FileBrowserUI
 extends VBoxContainer
 
+signal audio_file_selected(file_path: String)
+
+var selected_file_path: String = ""
+var selected_button: Button = null
+
 func scan_folder(path: String):
 	for child in get_children():
 		child.queue_free()
@@ -16,26 +21,23 @@ func scan_folder(path: String):
 			var btn = Button.new()
 			btn.text = file_name
 			btn.icon = get_theme_icon("AudioStreamWAV", "EditorIcons")
-			btn.set_meta("drag_data", {"type": "audio_clip", "path": file_path})
-			btn.gui_input.connect(_on_button_gui_input.bind(btn))
+			btn.toggle_mode = true
+			btn.pressed.connect(_on_button_pressed.bind(btn, file_path))
 			add_child(btn)
 		file_name = dir.get_next()
 
-func _on_button_gui_input(event: InputEvent, button: Button):
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		var preview = Label.new()
-		preview.text = button.text
-		set_drag_preview(preview)
+func _on_button_pressed(button: Button, file_path: String):
+	# Deselect previous button
+	if selected_button and selected_button != button:
+		selected_button.button_pressed = false
+	
+	if button.button_pressed:
+		selected_button = button
+		selected_file_path = file_path
+		audio_file_selected.emit(file_path)
+	else:
+		selected_button = null
+		selected_file_path = ""
 
-func _can_drop_data(_pos, data) -> bool:
-	return false
-
-func _drop_data(_pos, data):
-	pass  # This control doesn't accept drops
-
-func _get_drag_data(_pos):
-	# Find which button is under the mouse
-	for child in get_children():
-		if child is Button and child.get_global_rect().has_point(get_global_mouse_position()):
-			return child.get_meta("drag_data")
-	return null
+func get_selected_file() -> String:
+	return selected_file_path

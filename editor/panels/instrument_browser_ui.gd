@@ -15,15 +15,8 @@ func scan_folder(path: String):
 			var btn = Button.new()
 			btn.text = subdir_name.capitalize()
 			btn.icon = get_theme_icon("PluginScript", "EditorIcons")
-			btn.set_meta("drag_data", {"type": "instrument", "path": scene_path})
-			btn.gui_input.connect(_on_button_gui_input.bind(btn))
+			btn.set_meta("scene_path", scene_path)
 			add_child(btn)
-
-func _on_button_gui_input(event: InputEvent, button: Button):
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		var preview = Label.new()
-		preview.text = button.text
-		set_drag_preview(preview)
 
 func _can_drop_data(_pos, data) -> bool:
 	return false
@@ -31,8 +24,12 @@ func _can_drop_data(_pos, data) -> bool:
 func _drop_data(_pos, data):
 	pass
 
-func _get_drag_data(_pos):
+func _get_drag_data(pos):
+	# Find which button is under the mouse
 	for child in get_children():
-		if child is Button and child.get_global_rect().has_point(get_global_mouse_position()):
-			return child.get_meta("drag_data")
+		if child is Button and child.get_rect().has_point(pos):
+			var preview = Label.new()
+			preview.text = child.text
+			set_drag_preview(preview)
+			return {"type": "instrument", "path": child.get_meta("scene_path")}
 	return null

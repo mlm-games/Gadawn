@@ -6,6 +6,7 @@ signal playback_position_changed(time_sec: float)
 var _playback_pos_sec: float = 0.0
 var _is_playing: bool = false
 var _project: Project
+var _active_audio_clips: Dictionary = {} # Track which clips are playing
 
 @onready var _voice_container: Node = %VoiceContainer
 var _export_recorder: AudioEffectRecord
@@ -19,7 +20,8 @@ func _process(delta: float) -> void:
 	
 	if not _project: return
 
-	for track_data in _project.tracks:
+	for i in range(_project.tracks.size()):
+		var track_data = _project.tracks[i]
 		if track_data.is_muted: continue
 		
 		var instrument = _voice_container.get_node_or_null(str(track_data.get_instance_id()))
@@ -29,13 +31,24 @@ func _process(delta: float) -> void:
 		
 		for event in track_data.events:
 			var start_time = event.start_time_sec
+			var event_id = str(i) + "_" + str(event.get_instance_id())
+			
+			# Handle starting events
 			if start_time >= last_pos and start_time < _playback_pos_sec:
 				instrument.play_event(event)
+				if event is AudioClipEvent:
+					_active_audio_clips[event_id] = event
 			
+			# Handle stopping events
 			if event is NoteEvent:
 				var end_time = start_time + event.duration_sec
 				if end_time >= last_pos and end_time < _playback_pos_sec:
 					instrument.stop_event(event)
+			elif event is AudioClipEvent and _active_audio_clips.has(event_id):
+				var end_time = start_time + event.duration_sec
+				if _playback_pos_sec >= end_time:
+					instrument.stop_event(event)
+					_active_audio_clips.erase(event_id)
 
 	playback_position_changed.emit(_playback_pos_sec)
 
@@ -43,9 +56,13 @@ func load_project(project: Project) -> void:
 	_project = project
 	stop()
 	
+	# Clear existing instruments
 	for child in _voice_container.get_children():
 		child.queue_free()
 	
+	# Wait for children to be freed
+	await get_tree().process_frame
+
 	if not _project: return
 		
 	for track_data in _project.tracks:
@@ -57,7 +74,7 @@ func load_project(project: Project) -> void:
 				var audio_instrument = wrapper_script.new()
 				audio_instrument.name = track_id_str
 				_voice_container.add_child(audio_instrument)
-	
+
 			TrackData.TrackType.INSTRUMENT:
 				if track_data.instrument_scene:
 					var inst = track_data.instrument_scene.instantiate()
@@ -73,14 +90,23 @@ func stop() -> void:
 		
 	_is_playing = false
 	_playback_pos_sec = 0.0
+	_active_audio_clips.clear()
 	
 	for child in _voice_container.get_children():
-		child.all_notes_off()
+		if child.has_method("all_notes_off"):
+			child.all_notes_off()
 		
 	playback_position_changed.emit(0.0)
 
 func set_playback_position(time_sec: float) -> void:
 	_playback_pos_sec = max(0.0, time_sec)
+	_active_audio_clips.clear()
+	
+	# Stop all currently playing sounds
+	for child in _voice_container.get_children():
+		if child.has_method("all_notes_off"):
+			child.all_notes_off()
+	
 	playback_position_changed.emit(_playback_pos_sec)
 	
 func export_to_wav(file_path: String) -> void:

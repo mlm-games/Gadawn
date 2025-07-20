@@ -30,14 +30,19 @@ func _redraw_clips():
 			clip_ui.clip_moved.connect(_on_clip_moved)
 			add_child(clip_ui)
 
-func _can_drop_data(_pos, data) -> bool:
-	return data is Dictionary and data.has("type") and data["type"] == "audio_clip"
+func _gui_input(event: InputEvent):
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		# Check if there's a selected audio file
+		var file_browser = get_node("/root/Main/SongEditor/MainHSplit/LibraryPanel/TabContainer/Files/FileBrowser")
+		if file_browser and file_browser.has_method("get_selected_file"):
+			var selected_file = file_browser.get_selected_file()
+			if not selected_file.is_empty():
+				var new_clip_event = AudioClipEvent.new()
+				new_clip_event.audio_stream = load(selected_file)
+				new_clip_event.start_time_sec = event.position.x / project.view_zoom
+				event_created.emit(new_clip_event, track_index)
+				accept_event()
 
-func _drop_data(pos, data):
-	var new_clip_event = AudioClipEvent.new()
-	new_clip_event.audio_stream = load(data["path"])
-	new_clip_event.start_time_sec = pos.x / project.view_zoom
-	event_created.emit(new_clip_event, track_index)
 
 func _on_clip_moved(clip: AudioClipEvent, new_pos: Vector2):
 	var new_time_sec = new_pos.x / project.view_zoom

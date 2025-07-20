@@ -3,4 +3,5 @@
 [ext_resource type="Script" uid="uid://brnd1moamr62j" path="res://editor/panels/file_browser_ui.gd" id="1_browser"]
 
 [node name="FileBrowserUI" type="VBoxContainer"]
+mouse_filter = 0
 script = ExtResource("1_browser")
