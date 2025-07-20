@@ -6,7 +6,7 @@ signal playback_position_changed(time_sec: float)
 var _playback_pos_sec: float = 0.0
 var _is_playing: bool = false
 var _project: Project
-var _active_audio_clips: Dictionary = {} # Track which clips are playing
+var _active_audio_clips: Dictionary = {} # Track which clips are playing #FIXME: Currently, synthesiser audio only  plays when an square block is placed after placing M blocks
 
 @onready var _voice_container: Node = %VoiceContainer
 var _export_recorder: AudioEffectRecord
