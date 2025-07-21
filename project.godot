@@ -39,7 +39,7 @@ enabled=PackedStringArray()
 
 [gui]
 
-theme/custom="uid://cee0yehrjy3kp"
+theme/custom="uid://cif0cywfkle21"
 
 [input]
 
@@ -77,5 +77,5 @@ deselect_notes={
 
 [rendering]
 
-environment/defaults/default_clear_color=Color(0.17567894, 0.30064198, 0.49748018, 1)
+environment/defaults/default_clear_color=Color(0.053305805, 0.11421365, 0.2093748, 1)
 environment/default_clear_color=Color(0, 0, 0, 1)

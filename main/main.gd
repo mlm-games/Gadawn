@@ -13,7 +13,7 @@ extends Control
 @onready var dialog_manager: DialogManager = %DialogManager
 
 func _ready() -> void:
-	_on_new_project()
+	_on_new_project.call_deferred() #NOTE: Doesnt init properly without defer call
 
 	_connect_signals()
 
