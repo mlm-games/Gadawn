@@ -6,8 +6,8 @@ signal playback_position_changed(time_sec: float)
 var _playback_pos_sec: float = 0.0
 var _is_playing: bool = false
 var _project: Project
-var _active_events: Dictionary = {} # Track all active events by track
-var _instruments: Dictionary = {} # Cache instruments by track
+var _active_events: Dictionary = {}
+var _instruments: Dictionary = {}
 
 @onready var _voice_container: Node = %VoiceContainer
 var _export_recorder: AudioEffectRecord
@@ -82,8 +82,7 @@ func _get_instrument_for_track(track_data: TrackData) -> Node:
 	var instrument = null
 	match track_data.track_type:
 		TrackData.TrackType.AUDIO:
-			var wrapper_script = preload("res://instruments/audio_instrument_wrapper.gd")
-			instrument = wrapper_script.new()
+			instrument = AudioInstrumentWrapper.new()
 			instrument.name = "AudioTrack_" + str(track_id)
 			
 		TrackData.TrackType.INSTRUMENT:
@@ -140,7 +139,6 @@ func stop() -> void:
 func set_playback_position(time_sec: float) -> void:
 	_playback_pos_sec = max(0.0, time_sec)
 	
-	# Clear all active events
 	_active_events.clear()
 	
 	# Stop all currently playing sounds
@@ -155,7 +153,7 @@ func export_to_wav(file_path: String) -> void:
 		for track_data in _project.tracks:
 			_get_instrument_for_track(track_data)
 	
-	# This is a simplified non-real-time export.
+	#TODO?: This is a simplified non-real-time export. (Sounds good enough for now)
 	# For a real implementation, a more robust offline processing loop is needed.
 	_export_recorder = AudioEffectRecord.new()
 	var bus_idx = AudioServer.get_bus_index("Master")

@@ -4,7 +4,7 @@ extends Instrument
 
 var active_players: Dictionary = {} # Track active players by event reference
 var player_pool: Array[AudioStreamPlayer] = []
-var pool_size: int = 8
+var pool_size: int = 18 #TODO: Dynamically increase like nanobot's survival
 
 func _ready():
 	# Create a pool of players for polyphony

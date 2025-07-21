@@ -48,7 +48,7 @@ class AudioFileButton extends Button:
 		self.text = text
 		self.file_path = path
 		self.toggle_mode = true
-		self.icon = get_theme_icon("AudioStreamWAV", "EditorIcons")
+		self.icon = C.Icons.AudioFile
 		
 	func _gui_input(event: InputEvent):
 		if event is InputEventMouseButton:

@@ -33,12 +33,12 @@ func _connect_signals() -> void:
 
 	song_editor.top_bar.new_project_requested.connect(_on_new_project)
 	song_editor.top_bar.save_project_requested.connect(_on_save_project)
-	song_editor.top_bar.load_project_requested.connect(_on_load_project)
-	song_editor.top_bar.export_wav_requested.connect(_on_export_wav)
+	song_editor.top_bar.load_project_requested.connect(dialog_manager.show_load_dialog)
+	song_editor.top_bar.export_wav_requested.connect(dialog_manager.show_export_dialog)
 	
-	song_editor.timeline_ui.add_track_requested.connect(_on_add_track)
-	song_editor.timeline_ui.event_moved.connect(_on_event_moved)
-	song_editor.timeline_ui.event_created.connect(_on_event_created)
+	song_editor.timeline_ui.add_track_requested.connect(dialog_manager.show_new_track_dialog)
+	song_editor.timeline_ui.event_moved.connect(CurrentProject.move_event)
+	song_editor.timeline_ui.event_created.connect(CurrentProject.add_event_to_track)
 	
 	dialog_manager.file_selected.connect(_on_file_selected_for_load)
 	dialog_manager.file_save_selected.connect(_on_file_selected_for_save)
@@ -54,13 +54,10 @@ func _on_save_project() -> void:
 		dialog_manager.show_save_dialog()
 	else:
 		ResourceSaver.save(project, project.resource_path)
-		# Add a status bar message here later.
+		print("Saved!") # Add a status bar message here later.
 
 func _on_file_selected_for_save(path: String) -> void:
 	ResourceSaver.save(CurrentProject.project, path)
-
-func _on_load_project() -> void:
-	dialog_manager.show_load_dialog()
 
 func _on_file_selected_for_load(path: String) -> void:
 	var loaded_res = ResourceLoader.load(path)
@@ -69,14 +66,3 @@ func _on_file_selected_for_load(path: String) -> void:
 	else:
 		dialog_manager.show_error("Failed to load file. Not a valid Godawn project.")
 		
-func _on_export_wav() -> void:
-	dialog_manager.show_export_dialog()
-
-func _on_add_track() -> void:
-	dialog_manager.show_new_track_dialog()
-
-func _on_event_moved(event: TrackEvent, new_time: float, new_track_index: int) -> void:
-	CurrentProject.move_event(event, new_time, new_track_index)
-
-func _on_event_created(event: TrackEvent, track_index: int) -> void:
-	CurrentProject.add_event_to_track(event, track_index)
