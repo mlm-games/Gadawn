@@ -103,7 +103,7 @@ jobs:
           git config --local user.name "GitHub Actions"
           git pull
           git add export_presets.cfg
-          git add ./fastlane/metadata/android/en-US/changelogs/* # ${{ steps.prev_version.outputs.new_code }}.txt #TODO: unide it later
+          # git add ./fastlane/metadata/android/en-US/changelogs/* # ${{ steps.prev_version.outputs.new_code }}.txt #TODO: unide it later
           git commit -m "Update version to ${{ inputs.version_name }} (${{ steps.prev_version.outputs.new_code }})"
           git push
 
