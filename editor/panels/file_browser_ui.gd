@@ -16,12 +16,10 @@ func scan_folder(path: String):
 	dir.list_dir_begin()
 	var file_name = dir.get_next()
 	while file_name != "":
-		if not dir.current_is_dir() and (file_name.ends_with(".wav") or file_name.ends_with(".ogg")):
+		if not dir.current_is_dir() and (file_name.ends_with(".wav") or file_name.ends_with(".ogg") or file_name.ends_with(".mp3")):
 			var file_path = path.path_join(file_name)
-			var btn = Button.new()
-			btn.text = file_name
-			btn.icon = get_theme_icon("AudioStreamWAV", "EditorIcons")
-			btn.toggle_mode = true
+			var btn = AudioFileButton.new()
+			btn.setup(file_name, file_path)
 			btn.pressed.connect(_on_button_pressed.bind(btn, file_path))
 			add_child(btn)
 		file_name = dir.get_next()
@@ -41,3 +39,32 @@ func _on_button_pressed(button: Button, file_path: String):
 
 func get_selected_file() -> String:
 	return selected_file_path
+
+# Custom button class that supports drag and drop
+class AudioFileButton extends Button:
+	var file_path: String
+	
+	func setup(text: String, path: String):
+		self.text = text
+		self.file_path = path
+		self.toggle_mode = true
+		self.icon = get_theme_icon("AudioStreamWAV", "EditorIcons")
+		
+	func _gui_input(event: InputEvent):
+		if event is InputEventMouseButton:
+			if event.button_index == MOUSE_BUTTON_LEFT and event.pressed and button_pressed:
+				# Start drag operation
+				var preview = Label.new()
+				preview.text = text
+				set_drag_preview(preview)
+	
+	func _can_drop_data(position: Vector2, data) -> bool:
+		return false
+	
+	func _get_drag_data(position: Vector2):
+		if button_pressed:
+			var preview = Label.new()
+			preview.text = text
+			set_drag_preview(preview)
+			return {"type": "audio_file", "path": file_path}
+		return null
