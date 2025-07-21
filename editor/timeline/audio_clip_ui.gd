@@ -46,6 +46,25 @@ func set_selected(selected: bool):
 	queue_redraw()
 
 func _gui_input(event: InputEvent):
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			_is_dragging = true
+			_drag_start_pos = event.position
+			set_selected(true)
+			accept_event()
+		else:
+			if _is_dragging:
+				_is_dragging = false
+				accept_event()
+		return
+	
+	if event is InputEventScreenDrag and _is_dragging:
+		var new_position = position + event.relative
+		position = new_position
+		clip_moved.emit(clip_event, position)
+		accept_event()
+		return
+	
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			_is_dragging = true

@@ -201,8 +201,29 @@ func _draw():
 			draw_line(Vector2(x, 0), Vector2(x, size.y), color)
 
 func _gui_input(event: InputEvent):
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			# Check if clicking on empty space (not on a clip)
+			var clicked_on_clip = false
+			for child in get_children():
+				if child is AudioClipUI and child.get_rect().has_point(event.position):
+					clicked_on_clip = true
+					break
+			
+			if not clicked_on_clip:
+				## Clear selection when clicking empty space (change it?)
+				_clear_selection()
+				
+				# Check if there's a selected audio file to place
+				var file_browser = FileBrowserUI.I
+				if file_browser and file_browser.has_method("get_selected_file"):
+					var selected_file = file_browser.get_selected_file()
+					if not selected_file.is_empty():
+						_create_audio_clip_at(selected_file, event.position)
+						accept_event()
+		return
+	
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		# Check if clicking on empty space (not on a clip)
 		var clicked_on_clip = false
 		for child in get_children():
 			if child is AudioClipUI and child.get_rect().has_point(event.position):
@@ -210,7 +231,6 @@ func _gui_input(event: InputEvent):
 				break
 		
 		if not clicked_on_clip:
-			# Clear selection when clicking empty space
 			if not event.shift_pressed and not event.ctrl_pressed:
 				_clear_selection()
 			

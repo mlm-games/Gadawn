@@ -1,7 +1,7 @@
 class_name FileBrowserUI
 extends VBoxContainer
 
-static var I : FileBrowserUI
+static var I: FileBrowserUI
 
 func _init() -> void:
 	I = self
@@ -45,9 +45,10 @@ func _on_button_pressed(button: Button, file_path: String):
 func get_selected_file() -> String:
 	return selected_file_path
 
-# Custom button class that supports drag and drop
+# Custom button class for drag and drop
 class AudioFileButton extends Button:
 	var file_path: String
+	# var _is_touch_dragging: bool = false
 	
 	func setup(text: String, path: String):
 		self.text = text
@@ -55,18 +56,31 @@ class AudioFileButton extends Button:
 		self.toggle_mode = true
 		self.icon = C.Icons.AudioFile
 		
-	func _gui_input(event: InputEvent):
-		if event is InputEventMouseButton:
-			if event.button_index == MOUSE_BUTTON_LEFT and event.pressed and button_pressed:
-				# Start drag operation
-				var preview = Label.new()
-				preview.text = text
-				set_drag_preview(preview)
+	#func _gui_input(event: InputEvent): #NOTE: duplis, transition here?
+		## Handle touch drag
+		#if event is InputEventScreenTouch:
+			#if event.pressed and button_pressed:
+				#_is_touch_dragging = true
+				## Start drag operation
+				#var preview = Label.new()
+				#preview.text = text
+				#set_drag_preview(preview)
+		#
+		#if event is InputEventScreenDrag and _is_touch_dragging:
+			## Continue drag operation
+			#pass
+		#
+		#if event is InputEventMouseButton:
+			#if event.button_index == MOUSE_BUTTON_LEFT and event.pressed and button_pressed:
+				## Start drag operation
+				#var preview = Label.new()
+				#preview.text = text
+				#set_drag_preview(preview)
 	
-	func _can_drop_data(position: Vector2, data) -> bool:
+	func _can_drop_data(_position: Vector2, _data) -> bool:
 		return false
 	
-	func _get_drag_data(position: Vector2):
+	func _get_drag_data(_position: Vector2):
 		if button_pressed:
 			var preview = Label.new()
 			preview.text = text
