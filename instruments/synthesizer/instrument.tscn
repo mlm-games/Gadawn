@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c0skfqv20xtna"]
+
+[ext_resource type="Script" uid="uid://bqaftri6k80i0" path="res://instruments/synthesizer/instrument.gd" id="1_synth"]
+
+[node name="Synthesizer" type="Node"]
+script = ExtResource("1_synth")

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b0tyv63hhxwv2"]
+
+[ext_resource type="Script" uid="uid://b0ewmjfkggqoi" path="res://editor/panels/instrument_browser_ui.gd" id="1_browser"]
+
+[node name="InstrumentBrowserUI" type="VBoxContainer"]
+script = ExtResource("1_browser")

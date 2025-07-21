@@ -1,0 +1,35 @@
+[gd_scene load_steps=2 format=3 uid="uid://deiwl44g146pg"]
+
+[ext_resource type="Script" uid="uid://bxp4a0msljxhv" path="res://editor/dialogs/new_track_dialog.gd" id="1_dialog"]
+
+[node name="NewTrackDialog" type="ConfirmationDialog"]
+oversampling_override = 1.0
+title = "Add New Track"
+position = Vector2i(0, 36)
+size = Vector2i(400, 200)
+script = ExtResource("1_dialog")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 392.0
+offset_bottom = 160.0
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Track Type:"
+
+[node name="TrackTypeOption" type="OptionButton" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="InstrumentLabel" type="Label" parent="VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "Instrument:"
+
+[node name="InstrumentOption" type="OptionButton" parent="VBoxContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2

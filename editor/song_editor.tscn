@@ -1,0 +1,40 @@
+[gd_scene load_steps=6 format=3 uid="uid://d0640825wwiqj"]
+
+[ext_resource type="Script" uid="uid://c1ca01juwsbwy" path="res://editor/song_editor.gd" id="1_editor"]
+[ext_resource type="PackedScene" uid="uid://co3426kj3k403" path="res://editor/panels/top_bar.tscn" id="2_topbar"]
+[ext_resource type="PackedScene" uid="uid://cluyvkosdd3n8" path="res://editor/panels/library_panel.tscn" id="3_library"]
+[ext_resource type="PackedScene" uid="uid://cg6lcq4f2mrgq" path="res://editor/timeline/timeline_ui.tscn" id="4_timeline"]
+[ext_resource type="PackedScene" uid="uid://b4hc2xsvkl52r" path="res://editor/panels/transport_bar.tscn" id="5_transport"]
+
+[node name="SongEditor" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_editor")
+
+[node name="TopBar" parent="." instance=ExtResource("2_topbar")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="MainHSplit" type="HSplitContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+split_offset = 200
+
+[node name="LibraryPanel" parent="MainHSplit" instance=ExtResource("3_library")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="RightVBox" type="VBoxContainer" parent="MainHSplit"]
+layout_mode = 2
+
+[node name="TimelineUI" parent="MainHSplit/RightVBox" instance=ExtResource("4_timeline")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="TransportBar" parent="MainHSplit/RightVBox" instance=ExtResource("5_transport")]
+unique_name_in_owner = true
+layout_mode = 2

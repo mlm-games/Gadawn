@@ -1,0 +1,10 @@
+# Mono-specific ignores
+.mono/
+data_*/
+
+
+# Godot-specific ignores
+.godot/
+android/
+
+*.translation

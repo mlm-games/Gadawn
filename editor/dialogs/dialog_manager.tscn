@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3 uid="uid://buoe276tnprxb"]
+
+[ext_resource type="Script" uid="uid://0bjddwxltwn1" path="res://editor/dialogs/dialog_manager.gd" id="1_manager"]
+[ext_resource type="PackedScene" uid="uid://deiwl44g146pg" path="res://editor/dialogs/new_track_dialog.tscn" id="2_newtrack"]
+
+[node name="DialogManager" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_manager")
+
+[node name="FileDialog" type="FileDialog" parent="."]
+unique_name_in_owner = true
+title = "Open a File"
+size = Vector2i(600, 500)
+access = 2
+
+[node name="ErrorDialog" type="AcceptDialog" parent="."]
+unique_name_in_owner = true
+title = "Error"
+
+[node name="NewTrackDialog" parent="." instance=ExtResource("2_newtrack")]
+unique_name_in_owner = true
+
+[connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]

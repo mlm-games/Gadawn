@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://g15s0sr6gc2i"]
+
+[ext_resource type="Script" uid="uid://bqaftri6k80i0" path="res://instruments/synthesizer/instrument.gd" id="1_square"]
+
+[node name="Square" type="Node"]
+script = ExtResource("1_square")
+waveform = 2
+attack_sec = 0.001
+decay_sec = 0.08
+sustain_level = 0.0
+release_sec = 0.1

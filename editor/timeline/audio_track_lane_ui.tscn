@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://d8j10vdfcums"]
+
+[ext_resource type="Script" uid="uid://bq72j1amppy8r" path="res://editor/timeline/audio_track_lane_ui.gd" id="1_audiolane"]
+
+[node name="AudioTrackLaneUI" type="Control"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 3
+anchors_preset = 0
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("1_audiolane")

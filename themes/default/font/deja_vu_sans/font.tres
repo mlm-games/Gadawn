@@ -1,0 +1,14 @@
+[gd_resource type="FontFile" load_steps=2 format=3 uid="uid://k4hgdr0w0c0u"]
+
+[ext_resource type="FontFile" uid="uid://df453q8tl6chv" path="res://themes/default/font/deja_vu_sans/deja_vu_sans.ttf" id="1"]
+
+[resource]
+fallbacks = Array[Font]([ExtResource("1")])
+subpixel_positioning = 0
+msdf_pixel_range = 14
+msdf_size = 128
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0

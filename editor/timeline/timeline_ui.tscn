@@ -1,0 +1,83 @@
+[gd_scene load_steps=4 format=3 uid="uid://cg6lcq4f2mrgq"]
+
+[ext_resource type="Script" uid="uid://bbfja0h20bkyv" path="res://editor/timeline/timeline_ui.gd" id="1_timeline"]
+[ext_resource type="PackedScene" uid="uid://dgmbqblpnaqno" path="res://editor/timeline/track_header_ui.tscn" id="2_header"]
+[ext_resource type="PackedScene" uid="uid://b8nfm2slyjqej" path="res://editor/timeline/ruler_ui.tscn" id="3_fh13x"]
+
+[node name="TimelineUI" type="Control"]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_timeline")
+track_header_scene = ExtResource("2_header")
+
+[node name="HSplitContainer" type="HSplitContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+split_offset = 180
+
+[node name="HeaderPanel" type="PanelContainer" parent="HSplitContainer"]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="HSplitContainer/HeaderPanel"]
+layout_mode = 2
+
+[node name="RulerHeader" type="Control" parent="HSplitContainer/HeaderPanel/VBox"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+
+[node name="AddTrackButton" type="Button" parent="HSplitContainer/HeaderPanel/VBox/RulerHeader"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Add Track..."
+
+[node name="TrackHeadersContainer" type="VBoxContainer" parent="HSplitContainer/HeaderPanel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="TimelineScroll" type="ScrollContainer" parent="HSplitContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="TimelinePanel" type="Control" parent="HSplitContainer/TimelineScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+
+[node name="TrackLanesContainer" type="VBoxContainer" parent="HSplitContainer/TimelineScroll/TimelinePanel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 30.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Playhead" type="ColorRect" parent="HSplitContainer/TimelineScroll/TimelinePanel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 2.0
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 0.2, 0.2, 0.8)
+
+[node name="RulerUI" parent="HSplitContainer/TimelineScroll/TimelinePanel" instance=ExtResource("3_fh13x")]
+unique_name_in_owner = true
+layout_mode = 0
+offset_bottom = 30.0
+
+[connection signal="pressed" from="HSplitContainer/HeaderPanel/VBox/RulerHeader/AddTrackButton" to="." method="_on_add_track_button_pressed"]
+[connection signal="gui_input" from="HSplitContainer/TimelineScroll/TimelinePanel" to="." method="_on_timeline_panel_gui_input"]
