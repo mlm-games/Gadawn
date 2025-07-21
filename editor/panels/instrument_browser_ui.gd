@@ -18,10 +18,10 @@ func scan_folder(path: String):
 			btn.set_meta("scene_path", scene_path)
 			add_child(btn)
 
-func _can_drop_data(_pos, data) -> bool:
+func _can_drop_data(_pos, _data) -> bool:
 	return false
 
-func _drop_data(_pos, data):
+func _drop_data(_pos, _data):
 	pass
 
 func _get_drag_data(pos):

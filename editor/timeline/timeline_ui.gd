@@ -109,6 +109,13 @@ func _on_timeline_panel_gui_input(event: InputEvent):
 	if event is InputEventMagnifyGesture:
 		_zoom(event.factor)
 		get_viewport().set_input_as_handled()
+	
+	if event is InputEventScreenDrag:
+		# Two-finger drag for pan
+		if event.index == 1:
+			timeline_scroll.scroll_horizontal -= event.relative.x
+			timeline_scroll.scroll_vertical -= event.relative.y
+			get_viewport().set_input_as_handled()
 
 func _zoom(factor: float):
 	var mouse_pos_sec = (timeline_scroll.scroll_horizontal + get_local_mouse_position().x) / project.view_zoom

@@ -21,5 +21,5 @@ func _on_file_menu_id_pressed(id: int):
 		2: save_project_requested.emit()
 		4: export_wav_requested.emit()
 
-func set_project_name(name: String):
-	project_name_label.text = name
+func set_project_name(nm: String):
+	project_name_label.text = nm
