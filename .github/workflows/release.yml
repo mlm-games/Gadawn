@@ -70,6 +70,7 @@ jobs:
 
       - name: Generate Release Notes
         uses: mlm-games/release-notes-generator@main
+        if: ${{ inputs.auto_generate_changelog == true }}
         with:
           version: ${{ inputs.version_name }}
           changelog-path: 'CHANGELOG.md'
@@ -78,7 +79,7 @@ jobs:
           exclude-patterns: 'Update ,Merge ,Auto-generate changelog'
           auto-commit: 'true'
           commit-message: 'Update release notes for v{{version}}'
-          # metainfo-path: './others/flathub/io.github.mlm_games.imagot.metainfo.xml'  # TODO: Change here when copying
+          metainfo-path: './others/flathub/io.github.mlm_games.imagot.metainfo.xml'  # TODO: Change here when copying
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -102,7 +103,7 @@ jobs:
           git config --local user.name "GitHub Actions"
           git pull
           git add export_presets.cfg
-          git add ./fastlane/metadata/android/en-US/changelogs/${{ steps.prev_version.outputs.new_code }}.txt
+          git add ./fastlane/metadata/android/en-US/changelogs/${{ steps.prev_version.outputs.new_code }}.txt #TODO: unide it later
           git commit -m "Update version to ${{ inputs.version_name }} (${{ steps.prev_version.outputs.new_code }})"
           git push
 
