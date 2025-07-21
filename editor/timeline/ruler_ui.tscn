@@ -1,9 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://b8nfm2slyjqej"]
-
-[ext_resource type="Script" uid="uid://dpwkfuadopppr" path="res://editor/timeline/ruler_ui.gd" id="1_ruler"]
-
-[node name="RulerUI" type="Control"]
-custom_minimum_size = Vector2(0, 30)
-layout_mode = 3
-anchors_preset = 0
-script = ExtResource("1_ruler")
