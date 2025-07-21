@@ -12,7 +12,6 @@ const PATHS = {
 
 const Scenes = {
 	AudioClipUI = preload("res://editor/timeline/audio_clip_ui.tscn"),
-	Instrument = preload("res://instruments/synthesizer/instrument.gd"),
 	AudioTrackLaneUI = preload("res://editor/timeline/audio_track_lane_ui.tscn"),
 	PianoRollUI = preload("res://editor/timeline/piano_roll_ui.tscn")
 }

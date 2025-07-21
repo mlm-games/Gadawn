@@ -1,6 +1,11 @@
 class_name FileBrowserUI
 extends VBoxContainer
 
+static var I : FileBrowserUI
+
+func _init() -> void:
+	I = self
+
 signal audio_file_selected(file_path: String)
 
 var selected_file_path: String = ""

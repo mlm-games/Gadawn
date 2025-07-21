@@ -17,8 +17,8 @@ func _ready() -> void:
 
 	_connect_signals()
 
-	song_editor.library_panel.file_browser.scan_folder(C.P)
-	song_editor.library_panel.instrument_browser.scan_folder(C.)
+	song_editor.library_panel.file_browser.scan_folder(C.PATHS.AUDIO_SAMPLES_FOLDER)
+	song_editor.library_panel.instrument_browser.scan_folder(C.PATHS.INSTRUMENTS_FOLDER)
 
 func _connect_signals() -> void:
 	CurrentProject.project_changed.connect(song_editor.on_project_changed)

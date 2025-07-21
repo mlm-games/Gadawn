@@ -78,15 +78,15 @@ func _redraw_timeline():
 		header.set_track_data(track_data)
 		
 		# Create Track Lane based on type
-		var lane_scene : PackedScene
+		var lane_scene_path = ""
 		match track_data.track_type:
 			TrackData.TrackType.AUDIO:
-				lane_scene = C.Scenes.AudioTrackLaneUI
+				lane_scene_path = "res://editor/timeline/audio_track_lane_ui.tscn"
 			TrackData.TrackType.INSTRUMENT:
-				lane_scene = C.Scenes.PianoRollUI
+				lane_scene_path = "res://editor/timeline/piano_roll_ui.tscn"
 		
-		if not lane_scene:
-			var lane = lane_scene.instantiate()
+		if not lane_scene_path.is_empty(): # For some reason, removing the check causes audio to not play only while playing the track
+			var lane = load(lane_scene_path).instantiate()
 			track_lanes_container.add_child(lane)
 			lane.set_track_data(project, i)
 			

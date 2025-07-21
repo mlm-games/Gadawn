@@ -215,7 +215,7 @@ func _gui_input(event: InputEvent):
 				_clear_selection()
 			
 			# Check if there's a selected audio file to place
-			var file_browser = get_node_or_null("/root/Main/SongEditor/MainHSplit/LibraryPanel/TabContainer/Files/FileBrowser")
+			var file_browser = FileBrowserUI.I
 			if file_browser and file_browser.has_method("get_selected_file"):
 				var selected_file = file_browser.get_selected_file()
 				if not selected_file.is_empty():
@@ -262,7 +262,7 @@ func _on_clip_moved(clip: AudioClipEvent, new_pos: Vector2):
 	event_moved.emit(clip, new_time_sec, track_index)
 
 # Support drag and drop from file browser
-func _can_drop_data(position: Vector2, data) -> bool:
+func _can_drop_data(_position: Vector2, data) -> bool:
 	if data is Dictionary and data.has("type") and data["type"] == "audio_file":
 		return true
 	return false
