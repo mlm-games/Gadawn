@@ -6,110 +6,155 @@ signal playback_position_changed(time_sec: float)
 var _playback_pos_sec: float = 0.0
 var _is_playing: bool = false
 var _project: Project
-var _active_audio_clips: Dictionary = {} # Track which clips are playing #FIXME: Currently, synthesiser audio only  plays when an square block is placed after placing M blocks
+var _active_events: Dictionary = {} # Track all active events by track
+var _instruments: Dictionary = {} # Cache instruments by track
 
 @onready var _voice_container: Node = %VoiceContainer
 var _export_recorder: AudioEffectRecord
 
+func _ready():
+	# Ensure the voice container exists
+	if not _voice_container:
+		_voice_container = Node.new()
+		_voice_container.name = "VoiceContainer"
+		add_child(_voice_container)
+
 func _process(delta: float) -> void:
-	if not _is_playing:
+	if not _is_playing or not _project:
 		return
 
 	var last_pos = _playback_pos_sec
 	_playback_pos_sec += delta
-	
-	if not _project: return
 
 	for i in range(_project.tracks.size()):
 		var track_data = _project.tracks[i]
-		if track_data.is_muted: continue
+		if track_data.is_muted:
+			continue
 		
-		var instrument = _voice_container.get_node_or_null(str(track_data.get_instance_id()))
-		if not instrument: continue
+		# Get or create instrument for this track
+		var instrument = _get_instrument_for_track(track_data)
+		if not instrument:
+			continue
 		
 		instrument.set_volume(track_data.volume_db)
 		
+		# Track active events for this track
+		if not _active_events.has(i):
+			_active_events[i] = {}
+		
 		for event in track_data.events:
+			var event_id = event.get_instance_id()
 			var start_time = event.start_time_sec
-			var event_id = str(i) + "_" + str(event.get_instance_id())
 			
-			# Handle starting events
+			# Check if event should start
 			if start_time >= last_pos and start_time < _playback_pos_sec:
-				instrument.play_event(event)
-				if event is AudioClipEvent:
-					_active_audio_clips[event_id] = event
+				if not _active_events[i].has(event_id):
+					instrument.play_event(event)
+					_active_events[i][event_id] = event
 			
-			# Handle stopping events
-			if event is NoteEvent:
-				var end_time = start_time + event.duration_sec
-				if end_time >= last_pos and end_time < _playback_pos_sec:
+			# Check if event should stop
+			if _active_events[i].has(event_id):
+				var should_stop = false
+				
+				if event is NoteEvent:
+					var end_time = start_time + event.duration_sec
+					if _playback_pos_sec >= end_time:
+						should_stop = true
+				elif event is AudioClipEvent:
+					var end_time = start_time + event.duration_sec
+					if _playback_pos_sec >= end_time:
+						should_stop = true
+				
+				if should_stop:
 					instrument.stop_event(event)
-			elif event is AudioClipEvent and _active_audio_clips.has(event_id):
-				var end_time = start_time + event.duration_sec
-				if _playback_pos_sec >= end_time:
-					instrument.stop_event(event)
-					_active_audio_clips.erase(event_id)
+					_active_events[i].erase(event_id)
 
 	playback_position_changed.emit(_playback_pos_sec)
 
+func _get_instrument_for_track(track_data: TrackData) -> Node:
+	var track_id = track_data.get_instance_id()
+	
+	# Check cache first
+	if _instruments.has(track_id):
+		return _instruments[track_id]
+	
+	# Create new instrument
+	var instrument = null
+	match track_data.track_type:
+		TrackData.TrackType.AUDIO:
+			var wrapper_script = preload("res://instruments/audio_instrument_wrapper.gd")
+			instrument = wrapper_script.new()
+			instrument.name = "AudioTrack_" + str(track_id)
+			
+		TrackData.TrackType.INSTRUMENT:
+			if track_data.instrument_scene:
+				instrument = track_data.instrument_scene.instantiate()
+				instrument.name = "InstrumentTrack_" + str(track_id)
+	
+	if instrument:
+		_voice_container.add_child(instrument)
+		_instruments[track_id] = instrument
+		
+	return instrument
+
 func load_project(project: Project) -> void:
-	_project = project
 	stop()
+	_project = project
 	
 	# Clear existing instruments
 	for child in _voice_container.get_children():
 		child.queue_free()
+	_instruments.clear()
+	_active_events.clear()
 	
 	# Wait for children to be freed
 	await get_tree().process_frame
-
-	if not _project: return
-		
-	for track_data in _project.tracks:
-		var track_id_str = str(track_data.get_instance_id())
-		match track_data.track_type:
-			TrackData.TrackType.AUDIO:
-				# Create the wrapper instrument for audio tracks
-				var wrapper_script = preload("res://instruments/audio_instrument_wrapper.gd")
-				var audio_instrument = wrapper_script.new()
-				audio_instrument.name = track_id_str
-				_voice_container.add_child(audio_instrument)
-
-			TrackData.TrackType.INSTRUMENT:
-				if track_data.instrument_scene:
-					var inst = track_data.instrument_scene.instantiate()
-					inst.name = track_id_str
-					_voice_container.add_child(inst)
+	
+	# Pre-create instruments for all tracks
+	if _project:
+		for track_data in _project.tracks:
+			_get_instrument_for_track(track_data)
 
 func play() -> void:
+	# Ensure all instruments are created before playing
+	if _project:
+		for track_data in _project.tracks:
+			_get_instrument_for_track(track_data)
+	
 	_is_playing = true
 
 func stop() -> void:
-	if not _is_playing:
-		set_playback_position(0.0)
-		
 	_is_playing = false
 	_playback_pos_sec = 0.0
-	_active_audio_clips.clear()
 	
-	for child in _voice_container.get_children():
-		if child.has_method("all_notes_off"):
-			child.all_notes_off()
+	# Clear all active events
+	_active_events.clear()
+	
+	# Stop all instruments
+	for instrument in _instruments.values():
+		if instrument and is_instance_valid(instrument) and instrument.has_method("all_notes_off"):
+			instrument.all_notes_off()
 		
 	playback_position_changed.emit(0.0)
 
 func set_playback_position(time_sec: float) -> void:
 	_playback_pos_sec = max(0.0, time_sec)
-	_active_audio_clips.clear()
+	
+	# Clear all active events
+	_active_events.clear()
 	
 	# Stop all currently playing sounds
-	for child in _voice_container.get_children():
-		if child.has_method("all_notes_off"):
-			child.all_notes_off()
+	for instrument in _instruments.values():
+		if instrument and is_instance_valid(instrument) and instrument.has_method("all_notes_off"):
+			instrument.all_notes_off()
 	
 	playback_position_changed.emit(_playback_pos_sec)
-	
+
 func export_to_wav(file_path: String) -> void:
+	if _project:
+		for track_data in _project.tracks:
+			_get_instrument_for_track(track_data)
+	
 	# This is a simplified non-real-time export.
 	# For a real implementation, a more robust offline processing loop is needed.
 	_export_recorder = AudioEffectRecord.new()

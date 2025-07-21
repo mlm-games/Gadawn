@@ -17,6 +17,8 @@ signal event_created(event: TrackEvent, track_index: int)
 @onready var playhead: ColorRect = %Playhead
 @onready var timeline_scroll: ScrollContainer = %TimelineScroll
 
+var _last_project_state_hash: int = 0
+
 var project: Project
 
 # --- Public API ---
@@ -24,8 +26,24 @@ var project: Project
 func set_project(new_project: Project):
 	project = new_project
 	ruler_ui.project = new_project
-	_redraw_timeline()
-	timeline_scroll.scroll_horizontal = project.view_scroll_sec * project.view_zoom
+	
+	var state_hash = hash(project.tracks.size())
+	for track in project.tracks:
+		state_hash ^= hash(track.track_type)
+		state_hash ^= hash(track.track_name)
+	
+	# Only redraw if structure changed
+	if state_hash != _last_project_state_hash:
+		_last_project_state_hash = state_hash
+		_redraw_timeline()
+	else:
+		# Just update the existing lanes
+		for i in range(min(track_lanes_container.get_child_count(), project.tracks.size())):
+			var lane = track_lanes_container.get_child(i)
+			if lane.has_method("refresh_events"):
+				lane.refresh_events()
+	
+	timeline_scroll.scroll_horizontal = int(project.view_scroll_sec * project.view_zoom)
 
 func set_playhead_position(time_sec: float):
 	playhead.position.x = time_sec * project.view_zoom

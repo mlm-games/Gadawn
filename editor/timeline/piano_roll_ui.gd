@@ -10,8 +10,8 @@ var track_data: TrackData
 var project: Project
 var track_index: int
 
-var _key_height: float = 20.0  # Increased for touch-friendliness
-var _min_note_width: float = 10.0  # Minimum width for notes
+var _key_height: float = 20.0 # Increased for touch-friendliness
+var _min_note_width: float = 10.0 # Minimum width for notes
 
 # Selection
 var _selected_notes: Array[NoteEvent] = []
@@ -37,12 +37,28 @@ var _pending_note_position: Vector2 = Vector2.ZERO
 # Preview
 var _preview_instrument: SynthesizerInstrument
 
+var _pending_selection_ids: Array[String] = []
+
 # --- Public API ---
 
 func set_track_data(p_project: Project, p_track_index: int):
 	project = p_project
 	track_index = p_track_index
 	track_data = project.tracks[track_index]
+
+func refresh_events():
+	queue_redraw()
+	
+	# Restore pending selections if any
+	if not _pending_selection_ids.is_empty():
+		_selected_notes.clear()
+		for event in track_data.events:
+			if event is NoteEvent:
+				var note_id = _get_note_id(event)
+				if note_id in _pending_selection_ids:
+					_selected_notes.append(event)
+		_pending_selection_ids.clear()
+	
 	queue_redraw()
 
 # --- Lifecycle ---
@@ -92,7 +108,7 @@ func _draw():
 	for i in range(int(get_rect().size.x / beat_width_px) + 1):
 		var x = i * beat_width_px
 		var line_color = Color(0.2, 0.2, 0.23)
-		if i % 4 == 0:  # Measure lines
+		if i % 4 == 0: # Measure lines
 			line_color = Color(0.3, 0.3, 0.33)
 		draw_line(Vector2(x, 0), Vector2(x, get_rect().size.y), line_color)
 
@@ -118,9 +134,9 @@ func _draw():
 			# Draw velocity indicator
 			var velocity_height = note_rect.size.y * (event.velocity / 127.0)
 			var velocity_rect = Rect2(
-				note_rect.position.x, 
+				note_rect.position.x,
 				note_rect.position.y + note_rect.size.y - velocity_height,
-				4, 
+				4,
 				velocity_height
 			)
 			draw_rect(velocity_rect, note_color.darkened(0.3))
@@ -272,7 +288,7 @@ func _end_selection():
 		queue_redraw()
 
 func _select_notes_in_rect(rect: Rect2):
-	if rect.size.length() < 5:  # Ignore tiny selections
+	if rect.size.length() < 5: # Ignore tiny selections
 		return
 		
 	_selected_notes.clear()
@@ -338,7 +354,7 @@ func _create_note_at(position: Vector2):
 	# Snap to grid
 	var beat_duration = 60.0 / project.bpm
 	new_note.start_time_sec = snapped(new_note.start_time_sec, beat_duration / 4.0)
-	new_note.duration_sec = beat_duration / 4.0  # Default to 16th note
+	new_note.duration_sec = beat_duration / 4.0 # Default to 16th note
 	new_note.velocity = 100
 	
 	# Preview the note
@@ -364,22 +380,26 @@ func _delete_selected_notes():
 	# Notify project of changes
 	CurrentProject.project_changed.emit(CurrentProject.project)
 
+
 func _duplicate_selected_notes():
 	if _selected_notes.is_empty():
 		return
 		
-	var new_notes : Array[NoteEvent] = []
-	var time_offset = 60.0 / project.bpm  # Offset by one beat
+	var new_notes = []
+	var time_offset = 60.0 / project.bpm # Offset by one beat
+	
+	_pending_selection_ids.clear()
 	
 	for note in _selected_notes:
 		var new_note = note.duplicate()
 		new_note.start_time_sec += time_offset
 		new_notes.append(new_note)
 		track_data.events.append(new_note)
+		# Store the ID of what the new note will be
+		_pending_selection_ids.append(_get_note_id(new_note))
 	
-	_selected_notes = new_notes
+	# Notify project of changes
 	CurrentProject.project_changed.emit(CurrentProject.project)
-	queue_redraw()
 
 # --- Dragging Functions ---
 
@@ -440,12 +460,12 @@ func _preview_note(note: NoteEvent):
 		
 	# Create a temporary note for preview
 	var preview_note = note.duplicate()
-	preview_note.duration_sec = 0.2  # Short preview
+	preview_note.duration_sec = 0.2 # Short preview
 	
 	_preview_instrument.play_event(preview_note)
 	
 	# Stop preview after duration
-	get_tree().create_timer(preview_note.duration_sec).timeout.connect(func(): 
+	get_tree().create_timer(preview_note.duration_sec).timeout.connect(func():
 		_preview_instrument.stop_event(preview_note))
 
 # --- Helper Functions ---
@@ -473,3 +493,17 @@ func _drop_data(position: Vector2, data):
 	if data is Dictionary and data.has("type") and data["type"] == "instrument":
 		# Create a note at the drop position
 		_create_note_at(position)
+
+
+func get_selected_notes() -> Array[NoteEvent]:
+	return _selected_notes.duplicate()
+
+func set_selected_notes(notes: Array):
+	_selected_notes.clear()
+	for note in notes:
+		if note in track_data.events: # Verify note still exists
+			_selected_notes.append(note)
+	queue_redraw()
+
+func _get_note_id(note: NoteEvent) -> String:
+	return "%f_%d_%f_%d" % [note.start_time_sec, note.key, note.duration_sec, note.velocity]

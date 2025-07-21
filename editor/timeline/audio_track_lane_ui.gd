@@ -39,9 +39,15 @@ func _gui_input(event: InputEvent):
 			if not selected_file.is_empty():
 				var new_clip_event = AudioClipEvent.new()
 				new_clip_event.audio_stream = load(selected_file)
-				new_clip_event.start_time_sec = event.position.x / project.view_zoom
-				event_created.emit(new_clip_event, track_index)
-				accept_event()
+				if new_clip_event.audio_stream:
+					new_clip_event.start_time_sec = event.position.x / project.view_zoom
+					event_created.emit(new_clip_event, track_index)
+					accept_event()
+				else:
+					push_error("Failed to load audio file: " + selected_file)
+			else:
+				# Provide feedback that no file is selected
+				print("No audio file selected. Please select a file from the library.")
 
 
 func _on_clip_moved(clip: AudioClipEvent, new_pos: Vector2):
