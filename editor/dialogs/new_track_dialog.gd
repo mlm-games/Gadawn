@@ -32,7 +32,7 @@ func _scan_instruments():
 	_instrument_paths.clear()
 	instrument_option.clear()
 	
-	var path = "res://instruments/"
+	var path = C.PATHS.INSTRUMENTS_FOLDER
 	var dir = DirAccess.open(path)
 	if not dir: return
 

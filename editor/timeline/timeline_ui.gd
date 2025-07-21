@@ -78,15 +78,15 @@ func _redraw_timeline():
 		header.set_track_data(track_data)
 		
 		# Create Track Lane based on type
-		var lane_scene_path = ""
+		var lane_scene : PackedScene
 		match track_data.track_type:
 			TrackData.TrackType.AUDIO:
-				lane_scene_path = "res://editor/timeline/audio_track_lane_ui.tscn"
+				lane_scene = C.Scenes.AudioTrackLaneUI
 			TrackData.TrackType.INSTRUMENT:
-				lane_scene_path = "res://editor/timeline/piano_roll_ui.tscn"
+				lane_scene = C.Scenes.PianoRollUI
 		
-		if not lane_scene_path.is_empty():
-			var lane = load(lane_scene_path).instantiate()
+		if not lane_scene:
+			var lane = lane_scene.instantiate()
 			track_lanes_container.add_child(lane)
 			lane.set_track_data(project, i)
 			

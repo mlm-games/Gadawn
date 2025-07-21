@@ -23,8 +23,7 @@ func play_event(event: TrackEvent):
 	if _voices.has(event.key):
 		_voices[event.key].release_note()
 	
-	var voice_script = preload("res://instruments/synthesizer/voice.gd")
-	var new_voice = voice_script.new()
+	var new_voice = SynthesizerVoice.new()
 	add_child(new_voice)
 	new_voice.init_voice(self, event)
 	

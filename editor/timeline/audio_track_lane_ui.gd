@@ -8,7 +8,6 @@ var track_data: TrackData
 var project: Project
 var track_index: int
 
-var clip_ui_scene = preload("res://editor/timeline/audio_clip_ui.tscn")
 var _selected_clips: Array[AudioClipEvent] = []
 var _pending_selection_ids: Array[String] = []
 
@@ -129,7 +128,7 @@ func _redraw_clips():
 			_create_clip_ui(event)
 
 func _create_clip_ui(event: AudioClipEvent):
-	var clip_ui = clip_ui_scene.instantiate()
+	var clip_ui = C.Scenes.AudioClipUI.instantiate()
 	clip_ui.clip_event = event
 	clip_ui.project = project
 	

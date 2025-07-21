@@ -19,12 +19,11 @@ layout_mode = 2
 text = "clip_name.wav"
 vertical_alignment = 1
 clip_text = true
-mouse_filter = 2
 
 [node name="WaveformRect" type="ColorRect" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-color = Color(0.2, 0.3, 0.4, 0.5)
 mouse_filter = 2
+color = Color(0.2, 0.3, 0.4, 0.5)
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]

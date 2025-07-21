@@ -65,7 +65,7 @@ func refresh_events():
 
 func _ready():
 	# Create preview instrument
-	var synth_script = preload("res://instruments/synthesizer/instrument.gd")
+	var synth_script = C.Scenes.Instrument
 	_preview_instrument = synth_script.new()
 	_preview_instrument.waveform = SynthesizerInstrument.Waveform.SINE
 	_preview_instrument.attack_sec = 0.01
