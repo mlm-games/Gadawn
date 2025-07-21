@@ -15,4 +15,5 @@ Thanks
 --
 * All [Godot](https://github.com/godotengine/godot) contributors.
 * [Pixelorama](https://github.com/Orama-Interactive/Pixelorama) which inspired GoDAW from which Godawn was forked.
+* GDaw and GoDAW
 * All contributors of Godawn
