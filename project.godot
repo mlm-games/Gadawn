@@ -77,5 +77,6 @@ deselect_notes={
 
 [rendering]
 
+textures/vram_compression/import_etc2_astc=true
 environment/defaults/default_clear_color=Color(0.053305805, 0.11421365, 0.2093748, 1)
 environment/default_clear_color=Color(0, 0, 0, 1)
