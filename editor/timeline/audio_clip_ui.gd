@@ -7,7 +7,7 @@ var clip_event: AudioClipEvent
 var project: Project
 
 var _is_dragging = false
-var _drag_start_pos: Vector2
+var _drag_offset: Vector2
 var _is_selected = false
 
 func _ready():
@@ -49,33 +49,33 @@ func _gui_input(event: InputEvent):
 	if event is InputEventScreenTouch:
 		if event.pressed:
 			_is_dragging = true
-			_drag_start_pos = event.position
+			_drag_offset = event.position
 			set_selected(true)
 			accept_event()
 		else:
 			if _is_dragging:
 				_is_dragging = false
+				clip_moved.emit(clip_event, position)
 				accept_event()
 		return
 	
 	if event is InputEventScreenDrag and _is_dragging:
 		var new_position = position + event.relative
 		position = new_position
-		clip_moved.emit(clip_event, position)
 		accept_event()
 		return
 	
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			_is_dragging = true
-			_drag_start_pos = event.global_position - global_position
+			_drag_offset = event.position
 			set_selected(true)
 		else:
-			_is_dragging = false
+			if _is_dragging:
+				_is_dragging = false
+				clip_moved.emit(clip_event, position)
 		accept_event()
 	
 	elif event is InputEventMouseMotion and _is_dragging:
-		var drag_delta = event.global_position - (global_position + _drag_start_pos)
-		position += drag_delta
-		clip_moved.emit(clip_event, position)
+		position += event.relative
 		accept_event()
