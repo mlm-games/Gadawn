@@ -36,7 +36,7 @@ func init_voice(synth_instrument: SynthesizerInstrument, note_event: NoteEvent):
 	play()
 	
 	# Get playback after starting to play
-	_playback = get_stream_playback() as AudioStreamGeneratorPlayback
+	_playback = get_stream_playback()
 
 func _set_state(new_state: State):
 	_state = new_state
