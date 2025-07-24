@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="AudioSampleCollection" load_steps=5 format=3 uid="uid://ddv2pb2bip3fm"]
+
+[ext_resource type="AudioStream" uid="uid://dj415hb6op6uy" path="res://assets/audio_samples/t1.wav" id="1_xngy2"]
+[ext_resource type="AudioStream" uid="uid://h6ewcw7sd4or" path="res://assets/audio_samples/t2.wav" id="2_8my3p"]
+[ext_resource type="AudioStream" uid="uid://dglfx360wnies" path="res://assets/audio_samples/t3.wav" id="3_rmqvp"]
+[ext_resource type="Script" uid="uid://cqbdjliyuyfef" path="res://resources/audio_sample_collection.gd" id="4_17ojh"]
+
+[resource]
+script = ExtResource("4_17ojh")
+samples = Dictionary[StringName, AudioStream]({
+&"t1": ExtResource("1_xngy2"),
+&"t2": ExtResource("2_8my3p"),
+&"t3": ExtResource("3_rmqvp")
+})

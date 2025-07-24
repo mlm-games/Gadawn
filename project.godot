@@ -20,7 +20,8 @@ config/icon="uid://da4r4a6i5fi0s"
 
 [autoload]
 
-CurrentProject="*res://current_project.gd"
+CurrentProject="*res://autoloads/current_project.gd"
+Autoload="*res://autoloads/autoload.tscn"
 
 [debug]
 
