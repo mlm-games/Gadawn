@@ -42,6 +42,10 @@ _data = {
 
 [node name="SelectionToolbar" type="PanelContainer"]
 custom_minimum_size = Vector2(200, 50)
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 232.0
+offset_bottom = 72.0
 mouse_filter = 1
 script = ExtResource("1_toolbar")
 

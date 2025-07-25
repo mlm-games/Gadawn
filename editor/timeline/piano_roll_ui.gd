@@ -40,7 +40,7 @@ var _preview_instrument: SynthesizerInstrument
 
 var _pending_selection_ids: Array[String] = []
 
-var _selection_toolbar: Control
+@onready var _selection_toolbar: Control = $SelectionToolbar
 
 # --- Public API ---
 
@@ -78,7 +78,10 @@ func _ready():
 	
 	set_process_unhandled_key_input(true)
 	
-	_create_selection_toolbar()
+	_selection_toolbar.delete_pressed.connect(_delete_selected_notes)
+	_selection_toolbar.duplicate_pressed.connect(_duplicate_selected_notes)
+	_selection_toolbar.select_all_pressed.connect(_select_all_notes)
+	_selection_toolbar.deselect_pressed.connect(_clear_selection)
 
 
 func _process(delta: float):
@@ -271,16 +274,6 @@ func _handle_left_click_released():
 		_pending_note_position = Vector2.ZERO
 
 # --- Selection Functions ---
-
-func _create_selection_toolbar():
-	_selection_toolbar = preload("uid://dvbutbx5rq1n2").instantiate()
-	add_child(_selection_toolbar)
-	_selection_toolbar.delete_pressed.connect(_delete_selected_notes)
-	_selection_toolbar.duplicate_pressed.connect(_duplicate_selected_notes)
-	_selection_toolbar.select_all_pressed.connect(_select_all_notes)
-	_selection_toolbar.deselect_pressed.connect(_clear_selection)
-	
-	_selection_toolbar.position = Vector2(10, 10)
 
 func _update_selection_display():
 	#_update_clip_selections() #TODO: move to appropiate loc.

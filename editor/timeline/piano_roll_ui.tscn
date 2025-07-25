@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://c8nfm2slyjwer"]
+[gd_scene load_steps=3 format=3 uid="uid://c8nfm2slyjwer"]
 
 [ext_resource type="Script" uid="uid://mh7don2isw5n" path="res://editor/timeline/piano_roll_ui.gd" id="1_t8j45"]
+[ext_resource type="PackedScene" uid="uid://dvbutbx5rq1n2" path="res://editor/timeline/selection_toolbar.tscn" id="2_qubsb"]
 
 [node name="PianoRollUI" type="Control"]
 custom_minimum_size = Vector2(0, 120)
@@ -10,3 +11,6 @@ offset_right = 226.0
 offset_bottom = 120.0
 size_flags_vertical = 3
 script = ExtResource("1_t8j45")
+
+[node name="SelectionToolbar" parent="." instance=ExtResource("2_qubsb")]
+layout_mode = 0
