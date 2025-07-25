@@ -1,0 +1,107 @@
+[gd_scene load_steps=5 format=3 uid="uid://dvbutbx5rq1n2"]
+
+[ext_resource type="Script" uid="uid://ygoiq0xybns3" path="res://editor/timeline/selection_toolbar.gd" id="1_toolbar"]
+
+[sub_resource type="Animation" id="Animation_fade_in"]
+resource_name = "fade_in"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate:a")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 1.0]
+}
+
+[sub_resource type="Animation" id="Animation_fade_out"]
+resource_name = "fade_out"
+length = 0.2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate:a")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [1.0, 0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_toolbar"]
+_data = {
+&"fade_in": SubResource("Animation_fade_in"),
+&"fade_out": SubResource("Animation_fade_out")
+}
+
+[node name="SelectionToolbar" type="PanelContainer"]
+custom_minimum_size = Vector2(200, 50)
+mouse_filter = 1
+script = ExtResource("1_toolbar")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="DeleteButton" type="Button" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(44, 44)
+layout_mode = 2
+tooltip_text = "Delete selected notes"
+theme_override_font_sizes/font_size = 20
+text = "🗑️"
+flat = true
+
+[node name="DuplicateButton" type="Button" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(44, 44)
+layout_mode = 2
+tooltip_text = "Duplicate selected notes"
+theme_override_font_sizes/font_size = 20
+text = "📋"
+flat = true
+
+[node name="VSeparator" type="VSeparator" parent="MarginContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="SelectAllButton" type="Button" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(44, 44)
+layout_mode = 2
+tooltip_text = "Select all notes"
+theme_override_font_sizes/font_size = 20
+text = "⬚"
+flat = true
+
+[node name="DeselectButton" type="Button" parent="MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(44, 44)
+layout_mode = 2
+tooltip_text = "Deselect all"
+theme_override_font_sizes/font_size = 20
+text = "✖"
+flat = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+unique_name_in_owner = true
+libraries = {
+&"toolbar": SubResource("AnimationLibrary_toolbar")
+}
+
+[connection signal="pressed" from="MarginContainer/HBoxContainer/DeleteButton" to="." method="_on_delete_button_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/DuplicateButton" to="." method="_on_duplicate_button_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/SelectAllButton" to="." method="_on_select_all_button_pressed"]
+[connection signal="pressed" from="MarginContainer/HBoxContainer/DeselectButton" to="." method="_on_deselect_button_pressed"]

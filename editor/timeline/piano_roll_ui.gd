@@ -15,6 +15,7 @@ var _min_note_width: float = 10.0 # Minimum width for notes
 
 # Selection
 var _selected_notes: Array[NoteEvent] = []
+
 var _selection_rect: Rect2
 var _is_selecting: bool = false
 var _selection_start: Vector2
@@ -38,6 +39,8 @@ var _pending_note_position: Vector2 = Vector2.ZERO
 var _preview_instrument: SynthesizerInstrument
 
 var _pending_selection_ids: Array[String] = []
+
+var _selection_toolbar: Control
 
 # --- Public API ---
 
@@ -74,6 +77,8 @@ func _ready():
 	add_child(_preview_instrument)
 	
 	set_process_unhandled_key_input(true)
+	
+	_create_selection_toolbar()
 
 
 func _process(delta: float):
@@ -256,6 +261,7 @@ func _handle_left_click_pressed(position: Vector2, shift_pressed: bool, ctrl_pre
 		_pending_note_position = position
 	
 	queue_redraw()
+	_update_selection_display()
 
 func _handle_left_click_released():
 	if _is_dragging_note:
@@ -265,6 +271,48 @@ func _handle_left_click_released():
 		_pending_note_position = Vector2.ZERO
 
 # --- Selection Functions ---
+
+func _create_selection_toolbar():
+	_selection_toolbar = preload("uid://dvbutbx5rq1n2").instantiate()
+	add_child(_selection_toolbar)
+	_selection_toolbar.delete_pressed.connect(_delete_selected_notes)
+	_selection_toolbar.duplicate_pressed.connect(_duplicate_selected_notes)
+	_selection_toolbar.select_all_pressed.connect(_select_all_notes)
+	_selection_toolbar.deselect_pressed.connect(_clear_selection)
+	
+	_selection_toolbar.position = Vector2(10, 10)
+
+func _update_selection_display():
+	#_update_clip_selections() #TODO: move to appropiate loc.
+	
+	if _selection_toolbar:
+		_selection_toolbar.set_selection_count(_selected_notes.size())
+		if _selected_notes.size() > 0:
+			_selection_toolbar.show_toolbar()
+			_position_toolbar_near_selection()
+		else:
+			_selection_toolbar.hide_toolbar()
+
+func _position_toolbar_near_selection():
+	if _selected_notes.is_empty():
+		return
+	
+	var avg_pos = Vector2.ZERO
+	var min_y = INF
+	
+	for note in _selected_notes:
+		var rect = _get_note_rect(note)
+		avg_pos += rect.get_center()
+		min_y = min(min_y, rect.position.y)
+	
+	avg_pos /= _selected_notes.size()
+	
+	var toolbar_pos = Vector2(
+		clamp(avg_pos.x - 100, 10, size.x - 210),
+		max(10, min_y - 60)
+	)
+	
+	_selection_toolbar.position = toolbar_pos
 
 func _start_selection_at(position: Vector2):
 	_is_selecting = true
@@ -297,6 +345,7 @@ func _select_notes_in_rect(rect: Rect2):
 			if rect.intersects(note_rect):
 				_selected_notes.append(event)
 	queue_redraw()
+	_update_selection_display()
 
 func _toggle_note_selection(note: NoteEvent):
 	if note in _selected_notes:
@@ -304,6 +353,7 @@ func _toggle_note_selection(note: NoteEvent):
 	else:
 		_selected_notes.append(note)
 	queue_redraw()
+	_update_selection_display()
 
 func _range_select_to_note(target_note: NoteEvent):
 	if _selected_notes.is_empty():
@@ -322,6 +372,7 @@ func _range_select_to_note(target_note: NoteEvent):
 					if event not in _selected_notes:
 						_selected_notes.append(event)
 	queue_redraw()
+	_update_selection_display()
 
 func _select_all_notes():
 	_selected_notes.clear()
@@ -329,10 +380,12 @@ func _select_all_notes():
 		if event is NoteEvent:
 			_selected_notes.append(event)
 	queue_redraw()
+	_update_selection_display()
 
 func _clear_selection():
 	_selected_notes.clear()
 	queue_redraw()
+	_update_selection_display()
 
 # --- Note Manipulation Functions ---
 
