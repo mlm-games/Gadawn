@@ -1,30 +1,14 @@
 class_name AudioTrackLaneUI
-extends Control
+extends BaseTrackUI
 
-signal event_moved(event: TrackEvent, new_time: float, new_track_index: int)
-signal event_created(event: TrackEvent, track_index: int)
-
-var track_data: TrackData
-var project: Project
-var track_index: int
-
-var _selected_clips: Array[AudioClipEvent] = []
-var _pending_selection_ids: Array[String] = []
+# --- Lifecycle ---
 
 func _ready():
-	# Enable keyboard input processing
-	set_process_unhandled_key_input(true)
-
-func set_track_data(p_project: Project, p_track_index: int):
-	project = p_project
-	track_index = p_track_index
-	track_data = project.tracks[track_index]
+	super._ready()
 	
 	# Connect to project changes to refresh when clips are added
 	if not CurrentProject.project_changed.is_connected(_on_project_changed):
 		CurrentProject.project_changed.connect(_on_project_changed)
-	
-	_redraw_clips()
 
 func _on_project_changed(new_project: Project):
 	if new_project == project:
@@ -33,99 +17,119 @@ func _on_project_changed(new_project: Project):
 			track_data = project.tracks[track_index]
 			_redraw_clips()
 
+# --- Override virtual methods ---
 
-func _get_clip_id(clip: AudioClipEvent) -> String:
-	var stream_name = ""
-	if clip.audio_stream:
-		stream_name = clip.audio_stream.resource_path
-	return "%f_%s_%f" % [clip.start_time_sec, stream_name, clip.volume_db]
+func _get_event_rect(event: TrackEvent) -> Rect2:
+	if event is AudioClipEvent:
+		var clip = event as AudioClipEvent
+		var x = clip.start_time_sec * project.view_zoom
+		var w = max(80, clip.duration_sec * project.view_zoom)
+		return Rect2(x, 10, w, 60)
+	return Rect2()
 
-func _unhandled_key_input(event: InputEvent):
-	if not project or not is_visible_in_tree():
-		return
-	
-	# Only process if this track lane is visible and has focus
-	if event is InputEventKey and event.pressed:
-		var handled = false
-		
-		match event.keycode:
-			KEY_DELETE, KEY_BACKSPACE:
-				if not _selected_clips.is_empty():
-					_delete_selected_clips()
-					handled = true
-			KEY_D:
-				if event.ctrl_pressed and not _selected_clips.is_empty():
-					_duplicate_selected_clips()
-					handled = true
-			KEY_A:
-				if event.ctrl_pressed:
-					_select_all_clips()
-					handled = true
-			KEY_ESCAPE:
-				if not _selected_clips.is_empty():
-					_clear_selection()
-					handled = true
-		
-		if handled:
-			get_viewport().set_input_as_handled()
-
-func _delete_selected_clips():
-	if _selected_clips.is_empty():
-		return
-	
-	for clip in _selected_clips:
-		track_data.events.erase(clip)
-	
-	_selected_clips.clear()
-	_redraw_clips()
-	
-	# Notify project of changes
-	CurrentProject.project_changed.emit(CurrentProject.project)
-
-func _duplicate_selected_clips():
-	if _selected_clips.is_empty():
-		return
-	
-	var time_offset = 60.0 / project.bpm # Offset by one beat
-	_pending_selection_ids.clear()
-	
-	# Create duplicates
-	for clip in _selected_clips:
-		var new_clip = clip.duplicate()
-		new_clip.start_time_sec += time_offset
-		track_data.events.append(new_clip)
-		# Store the ID of what the new clip will be
-		_pending_selection_ids.append(_get_clip_id(new_clip))
-	
-	# Notify project of changes
-	CurrentProject.project_changed.emit(CurrentProject.project)
-
-func _select_all_clips():
-	_selected_clips.clear()
-	for event in track_data.events:
-		if event is AudioClipEvent:
-			_selected_clips.append(event)
-	_update_clip_selections()
-
-func _clear_selection():
-	_selected_clips.clear()
-	_update_clip_selections()
-
-func _update_clip_selections():
+func _get_event_at_position(position: Vector2) -> TrackEvent:
+	# Check clip UIs instead of calculating rects
 	for child in get_children():
-		if child is AudioClipUI:
-			child.set_selected(child.clip_event in _selected_clips)
+		if child is AudioClipUI and child.get_rect().has_point(position):
+			return child.clip_event
+	return null
 
+func _create_event_at(position: Vector2) -> void:
+	# Check if there's a selected audio file to place
+	var file_browser = FileBrowserUI.I
+	if file_browser and file_browser.has_method("get_selected_file"):
+		var selected_file = file_browser.get_selected_file()
+		if not selected_file.is_empty():
+			_create_audio_clip_from_file(selected_file, position)
+
+func _get_event_id(event: TrackEvent) -> String:
+	if event is AudioClipEvent:
+		var clip = event as AudioClipEvent
+		var stream_name = ""
+		if clip.audio_stream:
+			stream_name = clip.audio_stream.resource_path
+		return "%f_%s_%f" % [clip.start_time_sec, stream_name, clip.volume_db]
+	return ""
+
+func _draw_background() -> void:
+	# Draw track background
+	draw_rect(Rect2(Vector2.ZERO, size), Color(0.15, 0.15, 0.18, 0.5))
+	
+	# Draw grid lines
+	if project:
+		var beat_width_px = (60.0 / project.bpm) * project.view_zoom
+		for i in range(int(size.x / beat_width_px) + 1):
+			var x = i * beat_width_px
+			var color = Color(0.3, 0.3, 0.3, 0.3) if i % 4 == 0 else Color(0.2, 0.2, 0.2, 0.2)
+			draw_line(Vector2(x, 0), Vector2(x, size.y), color)
+
+func _draw_event(event: TrackEvent, rect: Rect2, is_selected: bool, is_dragging: bool) -> void:
+	# AudioTrackLaneUI uses AudioClipUI instances, so we don't draw events directly
+	pass
+
+# --- Override base class methods for custom behavior ---
+
+func _draw():
+	if not project: return
+	
+	_draw_background()
+	
+	# Don't draw selection rect for audio tracks
+	# The AudioClipUI handles its own selection display
+
+func refresh_events():
+	super.refresh_events()
+	_redraw_clips()
+
+func _update_selection_display():
+	super._update_selection_display()
+	_update_clip_selections()
+
+func _handle_left_click_pressed(position: Vector2, shift_pressed: bool, ctrl_pressed: bool):
+	var clicked_event = _get_event_at_position(position)
+	
+	if clicked_event:
+		# Let the AudioClipUI handle the input through _on_clip_gui_input
+		return
+	else:
+		# Click on empty space
+		if not shift_pressed and not ctrl_pressed:
+			_selected_events.clear()
+		_pending_event_position = position
+	
+	_update_selection_display()
+
+#func _update_dragged_event_position(position: Vector2):
+	## AudioClipUI handles its own dragging
+	#pass
+#
+#func _finish_dragging_events():
+	## AudioClipUI handles its own dragging
+	#pass
+
+# --- Audio-specific methods ---
 
 func _redraw_clips():
 	# Clear existing clips
 	for child in get_children():
-		child.queue_free()
+		if child is AudioClipUI:
+			child.queue_free()
 	
 	# Create new clip UIs
 	for event in track_data.events:
 		if event is AudioClipEvent:
 			_create_clip_ui(event)
+	
+	# Restore selections after redraw
+	if not _pending_selection_ids.is_empty():
+		_selected_events.clear()
+		for event in track_data.events:
+			if event is AudioClipEvent:
+				var clip_id = _get_event_id(event)
+				if clip_id in _pending_selection_ids:
+					_selected_events.append(event)
+		_pending_selection_ids.clear()
+		_update_clip_selections()
 
 func _create_clip_ui(event: AudioClipEvent):
 	var clip_ui = C.Scenes.AudioClipUI.instantiate()
@@ -143,7 +147,7 @@ func _create_clip_ui(event: AudioClipEvent):
 	clip_ui.size.y = 60 # Fixed height
 	
 	# Set selection state
-	clip_ui.set_selected(event in _selected_clips)
+	clip_ui.set_selected(event in _selected_events)
 	
 	# Connect signals
 	clip_ui.clip_moved.connect(_on_clip_moved)
@@ -156,93 +160,41 @@ func _on_clip_gui_input(event: InputEvent, clip_ui: AudioClipUI):
 		if event.pressed:
 			if event.ctrl_pressed:
 				# Toggle selection
-				_toggle_clip_selection(clip_ui.clip_event)
-			elif event.shift_pressed and not _selected_clips.is_empty():
+				_toggle_event_selection(clip_ui.clip_event)
+			elif event.shift_pressed and not _selected_events.is_empty():
 				# Range select
-				_range_select_to_clip(clip_ui.clip_event)
-			elif clip_ui.clip_event not in _selected_clips:
+				_range_select_to_event(clip_ui.clip_event)
+			elif clip_ui.clip_event not in _selected_events:
 				# Select only this clip
-				_selected_clips.clear()
-				_selected_clips.append(clip_ui.clip_event)
-				_update_clip_selections()
+				_selected_events.clear()
+				_selected_events.append(clip_ui.clip_event)
+				_update_selection_display()
 
-func _toggle_clip_selection(clip: AudioClipEvent):
-	if clip in _selected_clips:
-		_selected_clips.erase(clip)
-	else:
-		_selected_clips.append(clip)
-	_update_clip_selections()
+func _update_clip_selections():
+	for child in get_children():
+		if child is AudioClipUI:
+			child.set_selected(child.clip_event in _selected_events)
 
-func _range_select_to_clip(target_clip: AudioClipEvent):
-	if _selected_clips.is_empty():
+func _range_select_to_event(target_event: TrackEvent) -> void:
+	if not target_event is AudioClipEvent or _selected_events.is_empty():
 		return
+		
+	var target_clip = target_event as AudioClipEvent
+	var first_selected = _selected_events[0] as AudioClipEvent
 	
-	var first_selected = _selected_clips[0]
 	var start_time = min(first_selected.start_time_sec, target_clip.start_time_sec)
 	var end_time = max(first_selected.start_time_sec, target_clip.start_time_sec)
 	
 	for event in track_data.events:
 		if event is AudioClipEvent:
-			if event.start_time_sec >= start_time and event.start_time_sec <= end_time:
-				if event not in _selected_clips:
-					_selected_clips.append(event)
-	_update_clip_selections()
-
-func _draw():
-	# Draw track background
-	draw_rect(Rect2(Vector2.ZERO, size), Color(0.15, 0.15, 0.18, 0.5))
+			var clip = event as AudioClipEvent
+			if clip.start_time_sec >= start_time and clip.start_time_sec <= end_time:
+				if event not in _selected_events:
+					_selected_events.append(event)
 	
-	# Draw grid lines
-	if project:
-		var beat_width_px = (60.0 / project.bpm) * project.view_zoom
-		for i in range(int(size.x / beat_width_px) + 1):
-			var x = i * beat_width_px
-			var color = Color(0.3, 0.3, 0.3, 0.3) if i % 4 == 0 else Color(0.2, 0.2, 0.2, 0.2)
-			draw_line(Vector2(x, 0), Vector2(x, size.y), color)
+	_update_selection_display()
 
-func _gui_input(event: InputEvent):
-	if event is InputEventScreenTouch:
-		if event.pressed:
-			# Check if clicking on empty space (not on a clip)
-			var clicked_on_clip = false
-			for child in get_children():
-				if child is AudioClipUI and child.get_rect().has_point(event.position):
-					clicked_on_clip = true
-					break
-			
-			if not clicked_on_clip:
-				## Clear selection when clicking empty space (change it?)
-				_clear_selection()
-				
-				# Check if there's a selected audio file to place
-				var file_browser = FileBrowserUI.I
-				if file_browser and file_browser.has_method("get_selected_file"):
-					var selected_file = file_browser.get_selected_file()
-					if not selected_file.is_empty():
-						_create_audio_clip_at(selected_file, event.position)
-						accept_event()
-		return
-	
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		var clicked_on_clip = false
-		for child in get_children():
-			if child is AudioClipUI and child.get_rect().has_point(event.position):
-				clicked_on_clip = true
-				break
-		
-		if not clicked_on_clip:
-			if not event.shift_pressed and not event.ctrl_pressed:
-				_clear_selection()
-			
-			# Check if there's a selected audio file to place
-			var file_browser = FileBrowserUI.I
-			if file_browser and file_browser.has_method("get_selected_file"):
-				var selected_file = file_browser.get_selected_file()
-				if not selected_file.is_empty():
-					_create_audio_clip_at(selected_file, event.position)
-					accept_event()
-
-func _create_audio_clip_at(file_path: String, position: Vector2):
+func _create_audio_clip_from_file(file_path: String, position: Vector2):
 	var audio_stream = load(file_path)
 	if not audio_stream:
 		push_error("Failed to load audio file: " + file_path)
@@ -256,9 +208,15 @@ func _create_audio_clip_at(file_path: String, position: Vector2):
 	var beat_duration = 60.0 / project.bpm
 	new_clip_event.start_time_sec = snapped(new_clip_event.start_time_sec, beat_duration / 4.0)
 	
+	# Set duration based on audio stream if possible
+	if audio_stream.has_method("get_length"):
+		new_clip_event.duration_sec = audio_stream.get_length()
+	else:
+		new_clip_event.duration_sec = beat_duration # Default to one beat
+	
 	# Add to selection
-	_selected_clips.clear()
-	_selected_clips.append(new_clip_event)
+	_selected_events.clear()
+	_selected_events.append(new_clip_event)
 	
 	event_created.emit(new_clip_event, track_index)
 
@@ -271,23 +229,43 @@ func _on_clip_moved(clip: AudioClipEvent, new_pos: Vector2):
 	new_time_sec = max(0.0, new_time_sec) # Don't allow negative time
 	
 	# If multiple clips are selected, move them all
-	if clip in _selected_clips and _selected_clips.size() > 1:
+	if clip in _selected_events and _selected_events.size() > 1:
 		var time_delta = new_time_sec - clip.start_time_sec
-		for selected_clip in _selected_clips:
-			if selected_clip != clip:
+		for selected_event in _selected_events:
+			if selected_event != clip and selected_event is AudioClipEvent:
+				var selected_clip = selected_event as AudioClipEvent
 				var new_selected_time = selected_clip.start_time_sec + time_delta
 				new_selected_time = max(0.0, new_selected_time)
 				event_moved.emit(selected_clip, new_selected_time, track_index)
 	
 	event_moved.emit(clip, new_time_sec, track_index)
 
-# Support drag and drop from file browser
+# --- Drag and drop support ---
+
 func _can_drop_data(_position: Vector2, data) -> bool:
 	if data is Dictionary and data.has("type") and data["type"] == "audio_file":
 		return true
-	return false
+	return super._can_drop_data(_position, data)
 
 func _drop_data(position: Vector2, data):
 	if data is Dictionary and data.has("type") and data["type"] == "audio_file":
 		if data.has("path"):
-			_create_audio_clip_at(data["path"], position)
+			_create_audio_clip_from_file(data["path"], position)
+	else:
+		super._drop_data(position, data)
+
+# --- Compatibility methods ---
+
+func get_selected_clips() -> Array[AudioClipEvent]:
+	var clips: Array[AudioClipEvent] = []
+	for event in _selected_events:
+		if event is AudioClipEvent:
+			clips.append(event)
+	return clips
+
+func set_selected_clips(clips: Array):
+	_selected_events.clear()
+	for clip in clips:
+		if clip in track_data.events:
+			_selected_events.append(clip)
+	_update_selection_display()

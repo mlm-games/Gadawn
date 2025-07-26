@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://ej4236ts3fcq"]
+
+[ext_resource type="PackedScene" uid="uid://dvbutbx5rq1n2" path="res://editor/timeline/selection_toolbar.tscn" id="2_lmwwd"]
+
+[node name="BaseTrackUI" type="Control"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 226.0
+offset_bottom = 120.0
+size_flags_vertical = 3
+
+[node name="SelectionToolbar" parent="." instance=ExtResource("2_lmwwd")]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 222.0
+offset_bottom = 62.0
