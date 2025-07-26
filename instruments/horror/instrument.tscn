@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://d1olnpmf58vww"]
+
+[ext_resource type="Script" uid="uid://08dmpcr1niss" path="res://instruments/horror/instrument.gd" id="1_kijov"]
+
+[node name="Horror" type="Node"]
+script = ExtResource("1_kijov")
+attack_sec = 0.8000000000029104
+sustain_level = 0.6000000000058208
+release_sec = 1.5

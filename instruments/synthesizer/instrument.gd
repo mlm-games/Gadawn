@@ -14,7 +14,7 @@ enum Waveform {SINE, TRIANGLE, SQUARE, SAW, WHITE_NOISE}
 @export var sustain_level := 0.7
 @export var release_sec := 0.2
 
-var _voices: Dictionary = {} # Maps note key -> Voice instance
+var _voices: Dictionary[int, SynthesizerVoice]
 
 func play_event(event: TrackEvent):
 	if not event is NoteEvent: return

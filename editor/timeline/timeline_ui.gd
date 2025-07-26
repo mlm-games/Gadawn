@@ -61,9 +61,7 @@ func _redraw_timeline():
 	var total_length_sec = 10.0 # Minimum 10 seconds wide
 	for track in project.tracks:
 		for event in track.events:
-			var end_time = event.start_time_sec
-			if event is AudioClipEvent: end_time += event.duration_sec
-			elif event is NoteEvent: end_time += event.duration_sec
+			var end_time = event.get_time_component().start_time_sec + event.get_time_component().duration_sec
 			total_length_sec = max(total_length_sec, end_time)
 	
 	timeline_panel.custom_minimum_size.x = total_length_sec * project.view_zoom + 200 # Add buffer
