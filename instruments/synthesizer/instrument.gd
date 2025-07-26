@@ -20,18 +20,18 @@ func play_event(event: TrackEvent):
 	if not event is NoteEvent: return
 	
 	# Stop the existing voice for this key if it's still playing
-	if _voices.has(event.key):
-		_voices[event.key].release_note()
+	if _voices.has(event.get_component("pitch").key):
+		_voices[event.get_component("pitch").key].release_note()
 	
 	var new_voice = SynthesizerVoice.new()
 	add_child(new_voice)
 	new_voice.init_voice(self, event)
 	
-	_voices[event.key] = new_voice
+	_voices[event.get_component("pitch").key] = new_voice
 
 func stop_event(event: TrackEvent):
-	if event is NoteEvent and _voices.has(event.key):
-		_voices[event.key].release_note()
+	if event is NoteEvent and _voices.has(event.get_component("pitch").key):
+		_voices[event.get_component("pitch").key].release_note()
 
 func all_notes_off():
 	for key in _voices:

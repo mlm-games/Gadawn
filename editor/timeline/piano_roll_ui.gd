@@ -4,6 +4,15 @@ extends BaseTrackUI
 var _key_height: float = 20.0
 var _preview_instrument: SynthesizerInstrument
 
+enum DragMode {
+	MOVE,
+	RESIZE_LEFT,
+	RESIZE_RIGHT
+}
+
+var _drag_mode: DragMode = DragMode.MOVE
+var _resize_threshold: float = 8.0 # pixels from edge
+
 # --- Lifecycle ---
 
 func _ready():
@@ -21,13 +30,13 @@ func _ready():
 # --- Override virtual methods ---
 
 func _get_event_rect(event: TrackEvent) -> Rect2:
-	if event is NoteEvent:
-		var note = event as NoteEvent
-		var x = note.start_time_sec * project.view_zoom
-		var w = max(_min_event_width, note.duration_sec * project.view_zoom)
-		var y = (127 - note.key) * _key_height
-		return Rect2(x, y, w, _key_height)
-	return Rect2()
+	var time_comp := event.get_time_component()
+	var pitch_comp := event.get_component("pitch")
+	
+	var x = time_comp.start_time_sec * project.view_zoom
+	var w = max(_min_event_width, time_comp.duration_sec * project.view_zoom)
+	var y = (127 - pitch_comp.key) * _key_height
+	return Rect2(x, y, w, _key_height)
 
 func _get_event_at_position(position: Vector2) -> TrackEvent:
 	# Check in reverse order to get topmost note
@@ -40,29 +49,32 @@ func _get_event_at_position(position: Vector2) -> TrackEvent:
 
 func _create_event_at(position: Vector2) -> void:
 	var new_note = NoteEvent.new()
-	new_note.key = _pos_to_key(position.y)
-	new_note.start_time_sec = _pos_to_time(position.x)
+	var time_comp = new_note.get_time_component()
+	var pitch_comp :NotePitchComponent= new_note.get_component("pitch") 
+	var vel_comp :NoteVelocityComponent= new_note.get_component("velocity")
+
+	pitch_comp.key = _pos_to_key(position.y)
+	time_comp.start_time_sec = _pos_to_time(position.x)
 	
 	# Snap to grid
 	var beat_duration = 60.0 / project.bpm
-	new_note.start_time_sec = snapped(new_note.start_time_sec, beat_duration / 4.0)
-	new_note.duration_sec = beat_duration / 4.0 # Default to 16th note
-	new_note.velocity = 100
+	time_comp.start_time_sec = snapped(time_comp.start_time_sec, beat_duration / 4.0)
+	time_comp.duration_sec = beat_duration / 4.0
+	vel_comp.velocity = 100
 	
-	# Preview the note
 	_preview_event(new_note)
 	
-	# Add to selection
+	create_new_event(new_note)
+	
 	_selected_events.clear()
 	_selected_events.append(new_note)
-	
-	event_created.emit(new_note, track_index)
-	queue_redraw()
+	_update_selection_display()
+
 
 func _get_event_id(event: TrackEvent) -> String:
 	if event is NoteEvent:
-		var note = event as NoteEvent
-		return "%f_%d_%f_%d" % [note.start_time_sec, note.key, note.duration_sec, note.velocity]
+		var note : NoteEvent = event
+		return "%f_%d_%f_%d" % [note.start_time_sec, note.get_component("pitch").key, note.duration_sec, note.get_component("velocity").velocity]
 	return ""
 
 func _draw_background() -> void:
@@ -90,8 +102,8 @@ func _draw_background() -> void:
 
 func _draw_event(event: TrackEvent, rect: Rect2, is_selected: bool, is_dragging: bool) -> void:
 	if event is NoteEvent:
-		var note = event as NoteEvent
-		var note_color = Color.from_hsv(float(note.key % 12) / 12.0, 0.6, 0.9)
+		var note : NoteEvent = event
+		var note_color = Color.from_hsv(float(note.get_component("pitch").key % 12) / 12.0, 0.6, 0.9)
 		
 		# Modify appearance based on state
 		if is_selected:
@@ -107,7 +119,7 @@ func _draw_event(event: TrackEvent, rect: Rect2, is_selected: bool, is_dragging:
 			draw_rect(rect, note_color.lightened(0.3), false, 1.0)
 		
 		# Draw velocity indicator
-		var velocity_height = rect.size.y * (note.velocity / 127.0)
+		var velocity_height = rect.size.y * (note.get_component("velocity").velocity / 127.0)
 		var velocity_rect = Rect2(
 			rect.position.x,
 			rect.position.y + rect.size.y - velocity_height,
@@ -120,34 +132,34 @@ func _preview_event(event: TrackEvent) -> void:
 	if not _preview_instrument or not event is NoteEvent:
 		return
 		
-	var note = event as NoteEvent
+	var note : NoteEvent = event
 	# Create a temporary note for preview
-	var preview_note = note.duplicate()
-	preview_note.duration_sec = 0.2 # Short preview
+	var preview_note := note._duplicate()
+	preview_note.get_time_component().duration_sec = 0.2 # Short preview
 	
 	_preview_instrument.play_event(preview_note)
 	
 	# Stop preview after duration
-	get_tree().create_timer(preview_note.duration_sec).timeout.connect(func():
+	get_tree().create_timer(preview_note.get_time_component().duration_sec).timeout.connect(func():
 		_preview_instrument.stop_event(preview_note))
 
 func _range_select_to_event(target_event: TrackEvent) -> void:
 	if not target_event is NoteEvent or _selected_events.is_empty():
 		return
 		
-	var target_note = target_event as NoteEvent
-	var first_selected = _selected_events[0] as NoteEvent
+	var target_note : NoteEvent = target_event
+	var first_selected := _selected_events[0]
 	
 	var start_time = min(first_selected.start_time_sec, target_note.start_time_sec)
 	var end_time = max(first_selected.start_time_sec, target_note.start_time_sec)
-	var start_key = min(first_selected.key, target_note.key)
-	var end_key = max(first_selected.key, target_note.key)
+	var start_key = min(first_selected.key, target_note.get_component("pitch").key)
+	var end_key = max(first_selected.key, target_note.get_component("pitch").key)
 	
 	for event in track_data.events:
 		if event is NoteEvent:
-			var note = event as NoteEvent
+			var note : NoteEvent = event
 			if note.start_time_sec >= start_time and note.start_time_sec <= end_time:
-				if note.key >= start_key and note.key <= end_key:
+				if note.get_component("pitch").key >= start_key and note.get_component("pitch").key <= end_key:
 					if event not in _selected_events:
 						_selected_events.append(event)
 	queue_redraw()
@@ -157,27 +169,37 @@ func _update_dragged_event_position(position: Vector2) -> void:
 	if not _is_dragging or not _dragged_event is NoteEvent:
 		return
 	
-	var new_time = _pos_to_time(position.x - _drag_offset.x)
-	var new_key = _pos_to_key(position.y - _drag_offset.y)
+	var note : NoteEvent = _dragged_event
 	
-	# Snap to grid
-	var beat_duration = 60.0 / project.bpm
-	new_time = snapped(new_time, beat_duration / 4.0)
-	new_key = clampi(new_key, 0, 127)
-	
-	# Calculate delta from the dragged note
-	var time_delta = new_time - _drag_original_positions[_dragged_event]["time"]
-	var key_delta = new_key - (_drag_original_positions[_dragged_event]["key"] if _drag_original_positions[_dragged_event].has("key") else (_dragged_event as NoteEvent).key)
-	
-	# Apply delta to all selected notes
-	for event in _selected_events:
-		if event is NoteEvent and _drag_original_positions.has(event):
-			var note = event as NoteEvent
-			var original = _drag_original_positions[event]
-			note.start_time_sec = max(0.0, original["time"] + time_delta)
-			if not original.has("key"):
-				_drag_original_positions[event]["key"] = note.key
-			note.key = clampi(_drag_original_positions[event]["key"] + key_delta, 0, 127)
+	match _drag_mode:
+		DragMode.MOVE:
+			super._update_dragged_event_position(position)
+		
+		DragMode.RESIZE_RIGHT:
+			var new_end_time = _pos_to_time(position.x)
+			var beat_duration = 60.0 / project.bpm
+			new_end_time = snapped(new_end_time, beat_duration / 16.0) # Snap to 16th notes
+			
+			# Update duration for all selected notes
+			var duration_delta = new_end_time - (note.start_time_sec + note.duration_sec)
+			for event in _selected_events:
+				if event is NoteEvent:
+					var n : NoteEvent = event
+					n.duration_sec = max(beat_duration / 16.0, n.duration_sec + duration_delta)
+		
+		DragMode.RESIZE_LEFT:
+			var new_start_time = _pos_to_time(position.x)
+			var beat_duration = 60.0 / project.bpm
+			new_start_time = snapped(new_start_time, beat_duration / 16.0)
+			
+			# Adjust start time and duration
+			var time_delta = new_start_time - note.start_time_sec
+			for event in _selected_events:
+				if event is NoteEvent:
+					var n : NoteEvent = event
+					var old_end = n.start_time_sec + n.duration_sec
+					n.start_time_sec = max(0.0, n.start_time_sec + time_delta)
+					n.duration_sec = max(beat_duration / 16.0, old_end - n.start_time_sec)
 	
 	queue_redraw()
 
@@ -187,8 +209,8 @@ func _start_dragging_events(clicked_event: TrackEvent, position: Vector2) -> voi
 	# Store key positions for notes
 	for event in _selected_events:
 		if event is NoteEvent:
-			var note = event as NoteEvent
-			_drag_original_positions[event]["key"] = note.key
+			var note : NoteEvent = event
+			_drag_original_positions[event]["key"] = note.get_component("pitch").key
 
 # --- Helper Functions ---
 
@@ -210,3 +232,15 @@ func set_selected_notes(notes: Array):
 		if note in track_data.events:
 			_selected_events.append(note)
 	queue_redraw()
+
+
+func _get_drag_mode_at_position(note: NoteEvent, position: Vector2) -> DragMode:
+	var rect = _get_event_rect(note)
+	
+	# right edge
+	if position.x > rect.position.x + rect.size.x - _resize_threshold:
+		return DragMode.RESIZE_RIGHT
+	elif position.x < rect.position.x + _resize_threshold:
+		return DragMode.RESIZE_LEFT
+	else:
+		return DragMode.MOVE

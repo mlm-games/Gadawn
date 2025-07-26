@@ -3,5 +3,23 @@
 class_name TrackEvent
 extends Resource
 
-# The position of the event on the timeline, in seconds.
-@export var start_time_sec: float = 0.0
+@export var components: Dictionary = {} # String (name) -> EventComponent
+
+func get_time_component() -> TimeComponent:
+	return components.get("time")
+
+func add_component(name: String, component: EventComponent):
+	components[name] = component
+
+func get_component(name: String) -> EventComponent:
+	return components.get(name)
+
+func has_component(name: String) -> bool:
+	return components.has(name)
+
+func _duplicate(for_local: bool = false) -> Resource:
+	var new_event = super.duplicate(for_local)
+	new_event.components = {}
+	for key in components:
+		new_event.components[key] = (components[key] as EventComponent).duplicate_component()
+	return new_event

@@ -23,14 +23,14 @@ const OCTAVE_FACTOR = 1.05946309436 # 2^(1/12)
 func init_voice(synth_instrument: SynthesizerInstrument, note_event: NoteEvent):
 	_synth = synth_instrument
 	_note = note_event
-	_frequency = NOTE_FREQUENCIES_BASE_A * pow(OCTAVE_FACTOR, _note.key - 33)
+	_frequency = NOTE_FREQUENCIES_BASE_A * pow(OCTAVE_FACTOR, _note.get_component("pitch").key - 33)
 	
 	var stream_gen = AudioStreamGenerator.new()
 	stream_gen.mix_rate = AudioServer.get_mix_rate()
 	stream_gen.buffer_length = 0.05
 	self.stream = stream_gen
 	
-	self.volume_db = linear_to_db(_note.velocity / 127.0)
+	self.volume_db = linear_to_db(_note.get_component("velocity").velocity / 127.0)
 	
 	_set_state(State.ATTACK)
 	play()
@@ -67,7 +67,7 @@ func _update_state_machine():
 		State.RELEASE:
 			if _time_in_state >= _synth.release_sec:
 				_set_state(State.STOPPED)
-				_synth.call_deferred("_on_voice_finished", self, _note.key)
+				_synth.call_deferred("_on_voice_finished", self, _note.get_component("pitch").key)
 				queue_free()
 
 func _fill_buffer():

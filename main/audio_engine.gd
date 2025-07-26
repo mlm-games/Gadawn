@@ -44,7 +44,7 @@ func _process(delta: float) -> void:
 		
 		for event in track_data.events:
 			var event_id = event.get_instance_id()
-			var start_time = event.start_time_sec
+			var start_time = event.get_time_component().start_time_sec
 			
 			# Check if event should start
 			if start_time >= last_pos and start_time < _playback_pos_sec:
@@ -57,11 +57,11 @@ func _process(delta: float) -> void:
 				var should_stop = false
 				
 				if event is NoteEvent:
-					var end_time = start_time + event.duration_sec
+					var end_time = start_time + event.get_time_component().duration_sec
 					if _playback_pos_sec >= end_time:
 						should_stop = true
 				elif event is AudioClipEvent:
-					var end_time = start_time + event.duration_sec
+					var end_time = start_time + event.get_time_component().duration_sec
 					if _playback_pos_sec >= end_time:
 						should_stop = true
 				
@@ -168,9 +168,9 @@ func export_to_wav(file_path: String) -> void:
 	var total_length = 0.0
 	for track in _project.tracks:
 		for event in track.events:
-			var end_time = event.start_time_sec
-			if event is NoteEvent: end_time += event.duration_sec
-			elif event is AudioClipEvent: end_time += event.duration_sec
+			var end_time = event.get_time_component().start_time_sec
+			if event is NoteEvent: end_time += event.get_time_component().duration_sec
+			elif event is AudioClipEvent: end_time += event.get_time_component().duration_sec
 			total_length = max(total_length, end_time)
 	
 	await get_tree().create_timer(total_length + 1.0).timeout # Wait for song length + 1s buffer

@@ -78,10 +78,33 @@ func _ready():
 	set_process_unhandled_key_input(true)
 	
 	if _selection_toolbar:
-		_selection_toolbar.delete_pressed.connect(_delete_selected_events)
+		_selection_toolbar.delete_pressed.connect(_on_delete_selected_pressed)
 		_selection_toolbar.duplicate_pressed.connect(_duplicate_selected_events)
 		_selection_toolbar.select_all_pressed.connect(_select_all_events)
 		_selection_toolbar.deselect_pressed.connect(_clear_selection)
+	
+	UndoRedoManager.history_changed.connect(queue_redraw)
+	UndoRedoManager.history_changed.connect(_on_history_changed)
+
+
+func _on_history_changed():
+	# When undoing/redoing, the selection might become invalid.
+	var valid_selection : Array[TrackEvent] = []
+	for event in _selected_events:
+		if event in track_data.events:
+			valid_selection.append(event)
+	_selected_events = valid_selection 
+	_update_selection_display()
+	queue_redraw()
+
+func _add_event_to_track(event: TrackEvent):
+	if not event in track_data.events:
+		track_data.events.append(event)
+
+func _remove_event_from_track(event: TrackEvent):
+	if event in track_data.events:
+		track_data.events.erase(event)
+
 
 func _process(delta: float):
 	if _touch_timer >= 0.0:
@@ -173,7 +196,7 @@ func _unhandled_input(event: InputEvent):
 	var handled = false
 	
 	if event.is_action_pressed("delete_events") and not _selected_events.is_empty():
-		_delete_selected_events()
+		_on_delete_selected_pressed()
 		handled = true
 	elif event.is_action_pressed("duplicate_events") and not _selected_events.is_empty():
 		_duplicate_selected_events()
@@ -309,17 +332,26 @@ func _clear_selection():
 
 # --- Event Manipulation Functions ---
 
-func _delete_selected_events():
+func _on_delete_selected_pressed():
 	if _selected_events.is_empty():
 		return
 	
+	var ur := UndoRedoManager.undo_redo
+	ur.create_action("Delete Events")
+	
+	# Register the undo/do methods for each event
 	for event in _selected_events:
-		track_data.events.erase(event)
+		ur.add_do_method(_remove_event_from_track.bind(event))
+		ur.add_undo_method(_add_event_to_track.bind(event))
+		# This tells UndoRedo to manage the object's memory if it's freed
+		ur.add_undo_reference(event)
+
+	# We also need to undo the selection change
+	var previous_selection = _selected_events.duplicate()
+	ur.add_do_method(func(): _selected_events.clear())
+	ur.add_undo_method(func(): _selected_events = previous_selection)
 	
-	_selected_events.clear()
-	queue_redraw()
-	
-	CurrentProject.project_changed.emit(CurrentProject.project)
+	ur.commit_action()
 
 func _duplicate_selected_events():
 	if _selected_events.is_empty():
@@ -330,11 +362,25 @@ func _duplicate_selected_events():
 	
 	for event in _selected_events:
 		var new_event = event.duplicate()
-		new_event.start_time_sec += time_offset
+		new_event.get_time_component().start_time_sec += time_offset
 		track_data.events.append(new_event)
 		_pending_selection_ids.append(_get_event_id(new_event))
 	
 	CurrentProject.project_changed.emit(CurrentProject.project)
+
+func create_new_event(event: TrackEvent):
+	var ur = UndoRedoManager.undo_redo
+	ur.create_action("Create Event")
+	
+	ur.add_do_method(_add_event_to_track.bind(event))
+	ur.add_undo_method(_remove_event_from_track.bind(event))
+	ur.add_do_reference(event)
+	
+	var previous_selection = _selected_events.duplicate()
+	ur.add_do_method(func(): _selected_events = [event])
+	ur.add_undo_method(func(): _selected_events = previous_selection)
+	
+	ur.commit_action()
 
 # --- Dragging Functions ---
 
@@ -346,11 +392,11 @@ func _start_dragging_events(clicked_event: TrackEvent, position: Vector2):
 	_drag_original_positions.clear()
 	for event in _selected_events:
 		_drag_original_positions[event] = {
-			"time": event.start_time_sec
+			"time": event.get_time_component().start_time_sec
 		}
 
 func _update_dragged_event_position(position: Vector2):
-	# Subclasses should override for specific dragging logic
+	# Subclasses should override
 	pass
 
 func _finish_dragging_events():
@@ -362,6 +408,31 @@ func _finish_dragging_events():
 	_drag_original_positions.clear()
 	
 	CurrentProject.project_changed.emit(CurrentProject.project)
+
+func finish_event_drag(drag_states: Dictionary):
+	# drag_states format: { event: { old: {prop:val}, new: {prop:val} }, ... }
+	if drag_states.is_empty():
+		return
+		
+	var ur = UndoRedoManager.undo_redo
+	ur.create_action("Move Events", UndoRedo.MERGE_ENDS)
+	
+	for event in drag_states:
+		var states = drag_states[event]
+		var old_state = states.old
+		var new_state = states.new
+		
+		# Register property changes using the component system
+		var time_comp = event.get_time_component()
+		ur.add_do_property(time_comp, "start_time_sec", new_state.start_time_sec)
+		ur.add_undo_property(time_comp, "start_time_sec", old_state.start_time_sec)
+
+		if event is NoteEvent:
+			var pitch_comp = event.get_component("pitch")
+			ur.add_do_property(pitch_comp, "key", new_state.key)
+			ur.add_undo_property(pitch_comp, "key", old_state.key)
+
+	ur.commit_action()
 
 # --- Helper Functions ---
 

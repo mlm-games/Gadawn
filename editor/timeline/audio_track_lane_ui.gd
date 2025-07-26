@@ -22,8 +22,8 @@ func _on_project_changed(new_project: Project):
 func _get_event_rect(event: TrackEvent) -> Rect2:
 	if event is AudioClipEvent:
 		var clip = event as AudioClipEvent
-		var x = clip.start_time_sec * project.view_zoom
-		var w = max(80, clip.duration_sec * project.view_zoom)
+		var x = clip.get_time_component().start_time_sec * project.view_zoom
+		var w = max(80, clip.get_time_component().duration_sec * project.view_zoom)
 		return Rect2(x, 10, w, 60)
 	return Rect2()
 
@@ -48,7 +48,7 @@ func _get_event_id(event: TrackEvent) -> String:
 		var stream_name = ""
 		if clip.audio_stream:
 			stream_name = clip.audio_stream.resource_path
-		return "%f_%s_%f" % [clip.start_time_sec, stream_name, clip.volume_db]
+		return "%f_%s_%f" % [clip.get_time_component().start_time_sec, stream_name, clip.volume_db]
 	return ""
 
 func _draw_background() -> void:
@@ -137,11 +137,11 @@ func _create_clip_ui(event: AudioClipEvent):
 	clip_ui.project = project
 	
 	# Set position and size
-	clip_ui.position.x = event.start_time_sec * project.view_zoom
+	clip_ui.position.x = event.get_time_component().start_time_sec * project.view_zoom
 	clip_ui.position.y = 10 # Add some padding from top
 	
 	# Calculate width based on duration or use minimum
-	var clip_width = event.duration_sec * project.view_zoom
+	var clip_width = event.get_time_component().duration_sec * project.view_zoom
 	clip_ui.custom_minimum_size.x = max(80, clip_width)
 	clip_ui.size.x = max(80, clip_width)
 	clip_ui.size.y = 60 # Fixed height
@@ -182,13 +182,13 @@ func _range_select_to_event(target_event: TrackEvent) -> void:
 	var target_clip = target_event as AudioClipEvent
 	var first_selected = _selected_events[0] as AudioClipEvent
 	
-	var start_time = min(first_selected.start_time_sec, target_clip.start_time_sec)
-	var end_time = max(first_selected.start_time_sec, target_clip.start_time_sec)
+	var start_time = min(first_selected.get_time_component().start_time_sec, target_clip.get_time_component().start_time_sec)
+	var end_time = max(first_selected.get_time_component().start_time_sec, target_clip.get_time_component().start_time_sec)
 	
 	for event in track_data.events:
 		if event is AudioClipEvent:
 			var clip = event as AudioClipEvent
-			if clip.start_time_sec >= start_time and clip.start_time_sec <= end_time:
+			if clip.get_time_component().start_time_sec >= start_time and clip.get_time_component().start_time_sec <= end_time:
 				if event not in _selected_events:
 					_selected_events.append(event)
 	
@@ -200,19 +200,19 @@ func _create_audio_clip_from_file(file_path: String, position: Vector2):
 		push_error("Failed to load audio file: " + file_path)
 		return
 		
-	var new_clip_event = AudioClipEvent.new()
-	new_clip_event.audio_stream = audio_stream
-	new_clip_event.start_time_sec = position.x / project.view_zoom
+	var new_clip_event := AudioClipEvent.new()
+	new_clip_event.get_component("properties").audio_stream = audio_stream
+	new_clip_event.get_time_component().start_time_sec = position.x / project.view_zoom
 	
 	# Snap to grid
 	var beat_duration = 60.0 / project.bpm
-	new_clip_event.start_time_sec = snapped(new_clip_event.start_time_sec, beat_duration / 4.0)
+	new_clip_event.get_time_component().start_time_sec = snapped(new_clip_event.get_time_component().start_time_sec, beat_duration / 4.0)
 	
 	# Set duration based on audio stream if possible
 	if audio_stream.has_method("get_length"):
-		new_clip_event.duration_sec = audio_stream.get_length()
+		new_clip_event.get_time_component().duration_sec = audio_stream.get_length()
 	else:
-		new_clip_event.duration_sec = beat_duration # Default to one beat
+		new_clip_event.get_time_component().duration_sec = beat_duration # Default to one beat
 	
 	# Add to selection
 	_selected_events.clear()
@@ -230,11 +230,11 @@ func _on_clip_moved(clip: AudioClipEvent, new_pos: Vector2):
 	
 	# If multiple clips are selected, move them all
 	if clip in _selected_events and _selected_events.size() > 1:
-		var time_delta = new_time_sec - clip.start_time_sec
+		var time_delta = new_time_sec - clip.get_time_component().start_time_sec
 		for selected_event in _selected_events:
 			if selected_event != clip and selected_event is AudioClipEvent:
 				var selected_clip = selected_event as AudioClipEvent
-				var new_selected_time = selected_clip.start_time_sec + time_delta
+				var new_selected_time = selected_clip.get_time_component().start_time_sec + time_delta
 				new_selected_time = max(0.0, new_selected_time)
 				event_moved.emit(selected_clip, new_selected_time, track_index)
 	

@@ -2,10 +2,7 @@
 class_name AudioClipEvent
 extends TrackEvent
 
-@export var audio_stream: AudioStream
-
-@export var duration_sec: float:
-	get:
-		return audio_stream.get_length() if audio_stream else 0.0
-
-@export var volume_db: float = 0.0
+func _init():
+	add_component("time", TimeComponent.new())
+	add_component("properties", AudioClipPropertiesComponent.new())
+	add_component("fade", FadeComponent.new())

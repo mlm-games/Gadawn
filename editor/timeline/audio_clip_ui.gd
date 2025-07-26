@@ -17,8 +17,8 @@ func _ready():
 	# Create label if it doesn't exist
 	var label = Label.new()
 	label.name = "ClipLabel"
-	if clip_event and clip_event.audio_stream:
-		label.text = clip_event.audio_stream.resource_path.get_file()
+	if clip_event and clip_event.get_component("properties").audio_stream:
+		label.text = clip_event.get_component("properties").audio_stream.resource_path.get_file()
 	else:
 		label.text = "Audio Clip"
 	label.clip_text = true

@@ -36,7 +36,7 @@ func move_event(event: TrackEvent, new_time_sec: float, new_track_index: int):
 			break
 	
 	# Add it to the new track at the new time
-	event.start_time_sec = new_time_sec
+	event.get_time_component().start_time_sec = new_time_sec
 	project.tracks[new_track_index].events.append(event)
 	project_changed.emit(project)
 

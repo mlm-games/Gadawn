@@ -16,7 +16,7 @@ func _ready():
 		player_pool.append(player)
 
 func play_event(event: TrackEvent):
-	if event is AudioClipEvent and event.audio_stream:
+	if event is AudioClipEvent:
 		# Find an available player
 		var player = _get_available_player()
 		if not player:
@@ -24,8 +24,8 @@ func play_event(event: TrackEvent):
 			return
 		
 		active_players[event] = player
-		player.stream = event.audio_stream
-		player.volume_db = event.volume_db
+		player.stream = event.get_component("properties").audio_stream
+		player.volume_db = event.get_component("properties").volume_db
 		player.play()
 
 func stop_event(event: TrackEvent):
