@@ -112,7 +112,7 @@ func _render_note(event: NoteEvent, instrument: Node, current_time: float, chunk
 			
 			# Generate waveform
 			var phase = fmod(start_phase + phase_increment * i, 1.0)
-			var sample = _generate_waveform(phase, instrument.waveform) * envelope * (event.velocity / 127.0)
+			var sample = _generate_waveform(phase, instrument.waveform) * envelope * (event.get_component("velocity").velocity / 127.0)
 			
 			# Write stereo sample
 			samples[i * 2] = sample

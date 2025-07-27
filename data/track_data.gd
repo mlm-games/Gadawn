@@ -8,10 +8,8 @@ enum TrackType {AUDIO, INSTRUMENT}
 @export var track_name: String = "Track"
 @export var track_type: TrackType = TrackType.AUDIO
 
-# This array can hold either AudioClipEvents or NoteEvents.
 @export var events: Array[TrackEvent] = []
 
-# If it's an INSTRUMENT track, this scene is instantiated for playback.
 @export var instrument_scene: PackedScene
 
 # Standard track properties

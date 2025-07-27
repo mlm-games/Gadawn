@@ -94,7 +94,7 @@ func _on_history_changed():
 		if event in track_data.events:
 			valid_selection.append(event)
 	_selected_events = valid_selection 
-	_update_selection_display()
+	#_update_selectio/n_display()
 	queue_redraw()
 
 func _add_event_to_track(event: TrackEvent):
@@ -233,7 +233,6 @@ func _handle_left_click_pressed(position: Vector2, shift_pressed: bool, ctrl_pre
 		_pending_event_position = position
 	
 	queue_redraw()
-	_update_selection_display()
 
 func _handle_left_click_released():
 	if _is_dragging:
@@ -245,13 +244,12 @@ func _handle_left_click_released():
 # --- Selection Functions ---
 
 func _update_selection_display():
-	if _selection_toolbar:
-		_selection_toolbar.set_selection_count(_selected_events.size())
-		if _selected_events.size() > 0:
-			_selection_toolbar.show_toolbar()
-			_position_toolbar_near_selection()
-		else:
-			_selection_toolbar.hide_toolbar()
+	_selection_toolbar.set_selection_count(_selected_events.size())
+	if _selected_events.size() > 0:
+		_selection_toolbar.show_toolbar()
+		_position_toolbar_near_selection()
+	else:
+		_selection_toolbar.hide_toolbar()
 
 func _position_toolbar_near_selection():
 	if _selected_events.is_empty():

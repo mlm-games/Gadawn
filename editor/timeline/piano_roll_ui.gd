@@ -68,7 +68,6 @@ func _create_event_at(position: Vector2) -> void:
 	
 	_selected_events.clear()
 	_selected_events.append(new_note)
-	_update_selection_display()
 
 
 func _get_event_id(event: TrackEvent) -> String:
